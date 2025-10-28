@@ -241,7 +241,21 @@ nextjs-kambel/
 
 ## 🚀 Deployment
 
-### Vercel (Recommended)
+### DigitalOcean (Recommended for Full Control)
+
+**📖 See full guide:** [DIGITALOCEAN_DEPLOYMENT.md](./DIGITALOCEAN_DEPLOYMENT.md)
+
+Quick Docker deployment:
+```bash
+# Build and run with Docker Compose
+npm run docker:build
+npm run docker:run
+
+# Or use the deployment script
+./deploy.sh
+```
+
+### Vercel (Easiest)
 
 1. Push your code to GitHub
 2. Import project to Vercel
@@ -252,9 +266,9 @@ nextjs-kambel/
 
 ```env
 DATABASE_URL="postgresql://user:password@host:5432/database"
-NEXTAUTH_SECRET="your-production-secret"
-NEXTAUTH_URL="https://yourdomain.com"
-NEXT_PUBLIC_APP_URL="https://yourdomain.com"
+ADMIN_USERNAME="admin"
+ADMIN_PASSWORD="your_secure_password"
+NEXT_PUBLIC_SITE_URL="https://yourdomain.com"
 ```
 
 ### Database Migration
