@@ -1,0 +1,415 @@
+// This is your Prisma schema file
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// User model for admin authentication
+model User {
+  id           String   @id @default(cuid())
+  username     String   @unique
+  email        String   @unique
+  passwordHash String
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("users")
+}
+
+// Category model for publications
+model Category {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  
+  books Book[]
+
+  @@map("categories")
+}
+
+// Book/Publication model
+model Book {
+  id           String    @id @default(cuid())
+  title        String
+  author       String    @default("Moses Agbesi Katamani")
+  description  String?
+  pages        Int       @default(0)
+  price        Float     @default(0)
+  coverImage   String?
+  purchaseLink String?
+  isActive     Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  
+  categoryId String?
+  category   Category? @relation(fields: [categoryId], references: [id])
+
+  @@map("books")
+}
+
+// Consultancy Service model
+model ConsultancyService {
+  id          String   @id @default(cuid())
+  name        String
+  serviceType String   // 'career', 'business', 'personal', 'education'
+  description String
+  coverImage  String?
+  icon        String   @default("fas fa-briefcase")
+  isActive    Boolean  @default(true)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  
+  features ServiceFeature[]
+
+  @@map("consultancy_services")
+}
+
+// Service Feature model
+model ServiceFeature {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  icon        String   @default("fas fa-star")
+  isActive    Boolean  @default(true)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  
+  serviceId String
+  service   ConsultancyService @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@map("service_features")
+}
+
+// Blog Post model
+model BlogPost {
+  id          String   @id @default(cuid())
+  title       String
+  content     String
+  excerpt     String?
+  author      String   @default("Kambel Team")
+  coverImage  String?
+  isPublished Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("blog_posts")
+}
+
+// Contact Message model
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  subject   String?
+  message   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@map("contact_messages")
+}
+
+// Newsletter Subscription model
+model NewsletterSubscription {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  isActive     Boolean  @default(true)
+  subscribedAt DateTime @default(now())
+
+  @@map("newsletter_subscriptions")
+}
+
+// Site Configuration model
+model SiteConfig {
+  id              String   @id @default(cuid())
+  siteName        String   @default("Kambel Consult")
+  tagline         String   @default("Professional Consulting and Training Services")
+  footerAbout     String   @default("Your trusted partner in career development and business excellence. We provide professional consulting and training services to help individuals and organizations achieve their goals.")
+  privacyPolicy   String   @default("Privacy Policy content goes here. You can edit this from the admin settings.")
+  termsConditions String   @default("Terms & Conditions content goes here. You can edit this from the admin settings.")
+  logo            String?
+  favicon         String?
+  contactEmail    String?
+  contactPhone    String?
+  address         String?
+  location        String?
+  facebookUrl     String?
+  twitterUrl      String?
+  linkedinUrl     String?
+  instagramUrl    String?
+  youtubeUrl      String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("site_config")
+}
+
+// Hero Configuration model
+model HeroConfig {
+  id                     String   @id @default(cuid())
+  heroTitle              String   @default("Welcome to Kambel Consult")
+  heroSubtitle           String   @default("Your trusted partner in career development and business excellence")
+  profileName            String   @default("Moses Agbesi Katamani")
+  profileTitle           String   @default("Chief Executive Officer")
+  profilePicture         String?
+  yearsExperience        String   @default("15+")
+  yearsLabel             String   @default("Years Experience")
+  yearsDescription       String   @default("Professional Development")
+  clientsCount           String   @default("5000+")
+  clientsLabel           String   @default("Clients")
+  clientsDescription     String   @default("Successfully Helped")
+  publicationsCount      String   @default("50+")
+  publicationsLabel      String   @default("Publications")
+  publicationsDescription String  @default("Authored Works")
+  isActive               Boolean  @default(true)
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+
+  @@map("hero_config")
+}
+
+// About Configuration model
+model AboutConfig {
+  id              String   @id @default(cuid())
+  heroYears       String   @default("15+")
+  heroClients     String   @default("500+")
+  heroPublications String  @default("50+")
+  heroSpeaking    String   @default("100+")
+  profileName     String   @default("Moses Agbesi Katamani")
+  profileTitle    String   @default("Founder & CEO, Kambel Consult")
+  profilePicture  String?
+  bioSummary      String   @default("A visionary leader and expert consultant")
+  tags            String   @default("Education Expert,Career Coach,Business Advisor,Author,Speaker")
+  philosophyQuote String   @default("Education is the foundation of all progress")
+  ctaTitle        String   @default("Ready to Work Together?")
+  ctaDescription  String   @default("Let's discuss how I can help you achieve your goals")
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  journeyItems     ProfessionalJourneyItem[]
+  educationItems   EducationQualification[]
+  achievements     Achievement[]
+  speakingEngagements SpeakingEngagement[]
+
+  @@map("about_config")
+}
+
+// Professional Journey Item model
+model ProfessionalJourneyItem {
+  id           String   @id @default(cuid())
+  title        String
+  organization String
+  period       String
+  description  String
+  icon         String   @default("briefcase")
+  order        Int      @default(0)
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  
+  aboutConfigId String
+  aboutConfig   AboutConfig @relation(fields: [aboutConfigId], references: [id], onDelete: Cascade)
+
+  @@map("professional_journey_items")
+}
+
+// Education Qualification model
+model EducationQualification {
+  id            String   @id @default(cuid())
+  qualification String
+  institution   String
+  year          String
+  description   String   @default("")
+  icon          String   @default("graduation-cap")
+  order         Int      @default(0)
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  
+  aboutConfigId String
+  aboutConfig   AboutConfig @relation(fields: [aboutConfigId], references: [id], onDelete: Cascade)
+
+  @@map("education_qualifications")
+}
+
+// Achievement model
+model Achievement {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  year        String
+  icon        String   @default("trophy")
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  
+  aboutConfigId String
+  aboutConfig   AboutConfig @relation(fields: [aboutConfigId], references: [id], onDelete: Cascade)
+
+  @@map("achievements")
+}
+
+// Speaking Engagement model
+model SpeakingEngagement {
+  id        String   @id @default(cuid())
+  title     String
+  event     String
+  date      String
+  location  String?
+  order     Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  
+  aboutConfigId String
+  aboutConfig   AboutConfig @relation(fields: [aboutConfigId], references: [id], onDelete: Cascade)
+
+  @@map("speaking_engagements")
+}
+
+// Privacy Policy model
+model PrivacyPolicy {
+  id          String   @id @default(cuid())
+  title       String   @default("Privacy Policy")
+  subtitle    String   @default("Your privacy is important to us")
+  content     String
+  lastUpdated DateTime @default(now())
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("privacy_policies")
+}
+
+// Terms & Conditions model
+model TermsConditions {
+  id          String   @id @default(cuid())
+  title       String   @default("Terms & Conditions")
+  subtitle    String   @default("Please read these terms carefully")
+  content     String
+  lastUpdated DateTime @default(now())
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("terms_conditions")
+}
+
+// Masterclass model
+model Masterclass {
+  id             String   @id @default(cuid())
+  title          String
+  description    String
+  instructor     String   @default("Moses Agbesi Katamani")
+  date           DateTime
+  duration       String
+  price          Float    @default(0)
+  totalSeats     Int      @default(30)
+  seatsAvailable Int      @default(30)
+  coverImage     String?
+  videoUrl       String?
+  isUpcoming     Boolean  @default(true)
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  
+  registrations MasterclassRegistration[]
+
+  @@map("masterclasses")
+}
+
+// Social Media Link model
+model SocialMediaLink {
+  id        String   @id @default(cuid())
+  platform  String   // 'facebook', 'twitter', 'linkedin', 'instagram', 'youtube', 'tiktok'
+  url       String
+  iconClass String?
+  isActive  Boolean  @default(true)
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("social_media_links")
+}
+
+// Gallery Item model
+model GalleryItem {
+  id          String   @id @default(cuid())
+  title       String
+  caption     String?
+  description String?
+  mediaType   String   @default("image") // 'image' or 'video'
+  image       String?
+  videoUrl    String?
+  videoFile   String?
+  thumbnail   String?
+  order       Int      @default(0)
+  isFeatured  Boolean  @default(false)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("gallery_items")
+}
+
+// Masterclass Registration model
+model MasterclassRegistration {
+  id                  String   @id @default(cuid())
+  masterclassTitle    String
+  firstName           String
+  lastName            String
+  email               String
+  phone               String
+  company             String?
+  experienceYears     String?
+  motivation          String?
+  subscribeNewsletter Boolean  @default(false)
+  status              String   @default("pending") // 'pending', 'confirmed', 'cancelled'
+  notes               String?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  
+  masterclassId String?
+  masterclass   Masterclass? @relation(fields: [masterclassId], references: [id])
+
+  @@map("masterclass_registrations")
+}
+
+// Analytics - Page View model
+model PageView {
+  id          String   @id @default(cuid())
+  path        String
+  title       String?
+  referrer    String?
+  userAgent   String?
+  ipAddress   String?
+  contentType String?  // 'blog', 'publication', 'masterclass', 'service', 'page'
+  contentId   String?  // ID of the content being viewed
+  viewedAt    DateTime @default(now())
+
+  @@index([path])
+  @@index([contentType, contentId])
+  @@index([viewedAt])
+  @@map("page_views")
+}
+
+// Analytics Summary model (for caching aggregated data)
+model AnalyticsSummary {
+  id              String   @id @default(cuid())
+  totalPageViews  Int      @default(0)
+  totalBlogPosts  Int      @default(0)
+  totalPublications Int    @default(0)
+  totalMasterclasses Int   @default(0)
+  totalServices   Int      @default(0)
+  totalContacts   Int      @default(0)
+  totalNewsletterSubscribers Int @default(0)
+  lastUpdated     DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("analytics_summary")
+}
+
