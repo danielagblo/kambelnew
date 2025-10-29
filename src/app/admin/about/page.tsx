@@ -144,7 +144,8 @@ export default function AdminAboutPage() {
             heroSpeaking: data.heroSpeaking ?? prev.heroSpeaking,
             profileName: data.profileName ?? prev.profileName,
             profileTitle: data.profileTitle ?? prev.profileTitle,
-            profilePicture: data.profilePicture ?? prev.profilePicture,
+            // Ensure profilePicture is always set (even if empty string)
+            profilePicture: data.profilePicture !== undefined ? data.profilePicture : prev.profilePicture,
             bioSummary: data.bioSummary ?? prev.bioSummary,
             tags: data.tags ?? prev.tags,
             philosophyQuote: data.philosophyQuote ?? prev.philosophyQuote,
@@ -251,14 +252,17 @@ export default function AdminAboutPage() {
 
       if (response.ok) {
         const updatedData = await response.json();
+        console.log('About page saved successfully, response:', updatedData);
         // Update formData with the response to ensure IDs and data are in sync
         setFormData(prev => ({
           ...prev,
           ...updatedData,
           id: updatedData.id,
+          // Ensure profilePicture is preserved even if empty string
+          profilePicture: updatedData.profilePicture !== undefined ? updatedData.profilePicture : prev.profilePicture,
         }));
         toast.success('About page updated successfully!');
-        // Optionally refetch to ensure everything is in sync
+        // Refetch to ensure everything is in sync and ImageUpload component updates
         await fetchAboutConfig();
       } else {
         const errorData = await response.json().catch(() => ({ error: 'Failed to update' }));

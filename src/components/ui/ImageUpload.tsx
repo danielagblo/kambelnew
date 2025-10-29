@@ -25,7 +25,11 @@ export default function ImageUpload({
 
   // Sync preview with value prop changes
   useEffect(() => {
-    setPreview(value || '');
+    if (value !== preview) {
+      console.log('ImageUpload: Value changed, updating preview:', value);
+      setPreview(value || '');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value]);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -72,10 +76,13 @@ export default function ImageUpload({
         if (data.url) {
           // Always use the URL from the server, not the data URL
           const uploadedUrl = data.url;
-          onChange(uploadedUrl);
+          console.log('ImageUpload: Upload successful, URL:', uploadedUrl);
+          // Update both preview and call onChange to update parent
           setPreview(uploadedUrl);
+          onChange(uploadedUrl);
           toast.success('Image uploaded successfully!');
         } else {
+          console.error('ImageUpload: Upload failed, response:', data);
           toast.error(data.error || 'Failed to upload image');
           // Reset to previous value if upload fails
           setPreview(value || '');
@@ -115,10 +122,14 @@ export default function ImageUpload({
               className="w-full h-48 object-cover rounded-lg border border-gray-300"
               onError={(e) => {
                 console.error('Preview image failed to load:', preview);
-                // If it's a relative path, try adding domain or show error
-                if (preview.startsWith('/')) {
-                  e.currentTarget.style.display = 'none';
-                }
+                // Show error message instead of hiding
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'absolute inset-0 flex items-center justify-center bg-red-50 border-2 border-red-300 rounded-lg';
+                errorDiv.innerHTML = '<p class="text-red-600 text-sm px-2 text-center">Image failed to load</p>';
+                e.currentTarget.parentElement?.appendChild(errorDiv);
+              }}
+              onLoad={() => {
+                console.log('Preview image loaded successfully:', preview);
               }}
             />
             <button
