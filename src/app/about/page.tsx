@@ -6,8 +6,10 @@ import Button from '@/components/ui/Button';
 import Link from 'next/link';
 import Image from 'next/image';
 import { prisma } from '@/lib/prisma';
+import { unstable_noStore as noStore } from 'next/cache';
 
 async function getAboutData() {
+  noStore(); // Prevent Next.js from caching this page
   try {
     return await prisma.aboutConfig.findFirst({
       where: { isActive: true },

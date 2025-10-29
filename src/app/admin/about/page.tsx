@@ -130,15 +130,41 @@ export default function AdminAboutPage() {
 
   const fetchAboutConfig = async () => {
     try {
-      const response = await fetch('/api/site/about');
+      // Fetch for admin - gets the latest config regardless of isActive
+      const response = await fetch('/api/site/about?admin=true');
       if (response.ok) {
         const data = await response.json();
-        if (data) {
-          setFormData(data);
+        console.log('Fetched about config:', data);
+        if (data && data.id) {
+          // Update with fetched data, preserving empty strings but ensuring defaults for truly undefined
+          setFormData(prev => ({
+            heroYears: data.heroYears ?? prev.heroYears,
+            heroClients: data.heroClients ?? prev.heroClients,
+            heroPublications: data.heroPublications ?? prev.heroPublications,
+            heroSpeaking: data.heroSpeaking ?? prev.heroSpeaking,
+            profileName: data.profileName ?? prev.profileName,
+            profileTitle: data.profileTitle ?? prev.profileTitle,
+            profilePicture: data.profilePicture ?? prev.profilePicture,
+            bioSummary: data.bioSummary ?? prev.bioSummary,
+            tags: data.tags ?? prev.tags,
+            philosophyQuote: data.philosophyQuote ?? prev.philosophyQuote,
+            ctaTitle: data.ctaTitle ?? prev.ctaTitle,
+            ctaDescription: data.ctaDescription ?? prev.ctaDescription,
+            isActive: data.isActive !== undefined ? data.isActive : prev.isActive,
+            id: data.id,
+          }));
+        } else {
+          console.log('No existing about config found, using defaults');
         }
+        // If no data exists, keep the defaults - they're already set in useState
+      } else {
+        const errorData = await response.json().catch(() => ({ error: 'Failed to fetch' }));
+        console.error('Failed to fetch about config:', errorData);
+        toast.error('Failed to load about page data');
       }
     } catch (error) {
       console.error('Failed to fetch about config:', error);
+      toast.error('Error loading about page data');
     } finally {
       setLoading(false);
     }
