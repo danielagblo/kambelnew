@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { writeFile, mkdir } from 'fs/promises';
-import { join } from 'path';
 import { existsSync } from 'fs';
+import { mkdir, writeFile } from 'fs/promises';
+import { NextRequest, NextResponse } from 'next/server';
+import { join } from 'path';
 
 export async function POST(request: NextRequest) {
   try {
@@ -42,13 +42,24 @@ export async function POST(request: NextRequest) {
     const filepath = join(uploadDir, filename);
     await writeFile(filepath, buffer);
 
-    // Return file URL
+    // Return file URL (relative) and absolute URL for diagnostics
     const fileUrl = `/uploads/${folder}/${filename}`;
-    
+
+    // Build absolute URL using request headers (fall back to https)
+    const proto = request.headers.get('x-forwarded-proto') || request.headers.get('x-forwarded-protocol') || 'https';
+    const host = request.headers.get('host') || 'localhost:3000';
+    const absoluteUrl = `${proto}://${host}${fileUrl}`;
+
+    const existsOnDisk = existsSync(filepath);
+
+    console.log('Upload result:', { filepath, existsOnDisk, fileUrl, absoluteUrl });
+
     return NextResponse.json({
       message: 'File uploaded successfully',
       filename,
       url: fileUrl,
+      absoluteUrl,
+      existsOnDisk,
     });
   } catch (error) {
     console.error('Error uploading file:', error);
