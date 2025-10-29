@@ -66,25 +66,25 @@ export default async function AboutPage() {
       <Header />
       
       {/* Hero Stats */}
-      <section className="pt-32 pb-20 bg-gradient-to-br from-primary-600 to-primary-900 text-white">
-        <Container className="text-center">
-          <h1 className="text-5xl md:text-6xl font-bold mb-12">About Me</h1>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+      <section className="pt-24 md:pt-32 pb-12 md:pb-20 bg-gradient-to-br from-primary-600 to-primary-900 text-white">
+        <Container className="text-center px-4">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-8 md:mb-12">About Me</h1>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
             <div>
-              <div className="text-4xl font-bold mb-2">{about.heroYears || '0+'}</div>
-              <div className="text-sm text-gray-200">Years Experience</div>
+              <div className="text-2xl sm:text-3xl md:text-4xl font-bold mb-1 md:mb-2">{about.heroYears || '0+'}</div>
+              <div className="text-xs sm:text-sm text-gray-200">Years Experience</div>
             </div>
             <div>
-              <div className="text-4xl font-bold mb-2">{about.heroClients || '0+'}</div>
-              <div className="text-sm text-gray-200">Clients Served</div>
+              <div className="text-2xl sm:text-3xl md:text-4xl font-bold mb-1 md:mb-2">{about.heroClients || '0+'}</div>
+              <div className="text-xs sm:text-sm text-gray-200">Clients Served</div>
             </div>
             <div>
-              <div className="text-4xl font-bold mb-2">{about.heroPublications || '0+'}</div>
-              <div className="text-sm text-gray-200">Publications</div>
+              <div className="text-2xl sm:text-3xl md:text-4xl font-bold mb-1 md:mb-2">{about.heroPublications || '0+'}</div>
+              <div className="text-xs sm:text-sm text-gray-200">Publications</div>
             </div>
             <div>
-              <div className="text-4xl font-bold mb-2">{about.heroSpeaking || '0+'}</div>
-              <div className="text-sm text-gray-200">Speaking Engagements</div>
+              <div className="text-2xl sm:text-3xl md:text-4xl font-bold mb-1 md:mb-2">{about.heroSpeaking || '0+'}</div>
+              <div className="text-xs sm:text-sm text-gray-200">Speaking Engagements</div>
             </div>
           </div>
         </Container>
