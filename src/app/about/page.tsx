@@ -59,7 +59,7 @@ export default async function AboutPage() {
     );
   }
 
-  const tags = about.tags ? about.tags.split(',').map(t => t.trim()).filter(t => t) : [];
+  const tags = about.tags ? String(about.tags).split(',').map(t => t.trim()).filter(t => t) : [];
 
   return (
     <>
@@ -71,19 +71,19 @@ export default async function AboutPage() {
           <h1 className="text-5xl md:text-6xl font-bold mb-12">About Me</h1>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             <div>
-              <div className="text-4xl font-bold mb-2">{about.heroYears}</div>
+              <div className="text-4xl font-bold mb-2">{about.heroYears || '0+'}</div>
               <div className="text-sm text-gray-200">Years Experience</div>
             </div>
             <div>
-              <div className="text-4xl font-bold mb-2">{about.heroClients}</div>
+              <div className="text-4xl font-bold mb-2">{about.heroClients || '0+'}</div>
               <div className="text-sm text-gray-200">Clients Served</div>
             </div>
             <div>
-              <div className="text-4xl font-bold mb-2">{about.heroPublications}</div>
+              <div className="text-4xl font-bold mb-2">{about.heroPublications || '0+'}</div>
               <div className="text-sm text-gray-200">Publications</div>
             </div>
             <div>
-              <div className="text-4xl font-bold mb-2">{about.heroSpeaking}</div>
+              <div className="text-4xl font-bold mb-2">{about.heroSpeaking || '0+'}</div>
               <div className="text-sm text-gray-200">Speaking Engagements</div>
             </div>
           </div>
@@ -100,13 +100,11 @@ export default async function AboutPage() {
               <div className="w-64 h-64 md:w-80 md:h-80 relative rounded-3xl overflow-hidden shadow-xl">
                 <Image
                   src={about.profilePicture}
-                  alt={about.profileName}
+                  alt={about.profileName || 'Profile picture'}
                   fill
                   className="object-cover"
-                  unoptimized={about.profilePicture.startsWith('/uploads/')}
-                  onError={(e) => {
-                    console.error('Image failed to load:', about.profilePicture);
-                  }}
+                  unoptimized={about.profilePicture?.startsWith('/uploads/') ?? false}
+                  sizes="(max-width: 768px) 256px, 320px"
                 />
               </div>
             ) : (
@@ -155,7 +153,7 @@ export default async function AboutPage() {
       </section>
 
       {/* Professional Journey */}
-      {about.journeyItems.length > 0 && (
+      {about.journeyItems && about.journeyItems.length > 0 && (
         <section className="py-20 bg-gray-50">
           <Container>
             <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
@@ -189,7 +187,7 @@ export default async function AboutPage() {
       )}
 
       {/* Education & Qualifications */}
-      {about.educationItems.length > 0 && (
+      {about.educationItems && about.educationItems.length > 0 && (
         <section className="py-20">
           <Container>
             <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
@@ -221,7 +219,7 @@ export default async function AboutPage() {
       )}
 
       {/* Achievements */}
-      {about.achievements.length > 0 && (
+      {about.achievements && about.achievements.length > 0 && (
         <section className="py-20 bg-gray-50">
           <Container>
             <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
@@ -248,7 +246,7 @@ export default async function AboutPage() {
       )}
 
       {/* Speaking Engagements */}
-      {about.speakingEngagements.length > 0 && (
+      {about.speakingEngagements && about.speakingEngagements.length > 0 && (
         <section className="py-20">
           <Container>
             <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
@@ -282,8 +280,8 @@ export default async function AboutPage() {
       {/* CTA Section */}
       <section className="py-20 bg-primary-600 text-white">
         <Container className="text-center">
-          <h2 className="text-3xl font-bold mb-4">{about.ctaTitle}</h2>
-          <p className="text-xl mb-8 max-w-2xl mx-auto">{about.ctaDescription}</p>
+          <h2 className="text-3xl font-bold mb-4">{about.ctaTitle || 'Ready to Work Together?'}</h2>
+          <p className="text-xl mb-8 max-w-2xl mx-auto">{about.ctaDescription || "Let's discuss how I can help you achieve your goals"}</p>
           <Link href="/contact">
             <Button size="lg" className="bg-white text-primary-700 hover:bg-gray-100">
               Get in Touch <i className="fas fa-arrow-right ml-2" />
