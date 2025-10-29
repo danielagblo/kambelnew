@@ -86,10 +86,10 @@ export default function ContactPage() {
       <Header />
       
       {/* Hero Section */}
-      <section className="pt-32 pb-20 bg-gradient-to-br from-primary-600 to-primary-900 text-white">
-        <Container className="text-center">
-          <h1 className="text-5xl md:text-6xl font-bold mb-6">Contact Us</h1>
-          <p className="text-xl text-gray-100 max-w-3xl mx-auto">
+      <section className="pt-24 md:pt-32 pb-12 md:pb-20 bg-gradient-to-br from-primary-600 to-primary-900 text-white">
+        <Container className="text-center px-4">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 md:mb-6">Contact Us</h1>
+          <p className="text-base sm:text-lg md:text-xl text-gray-100 max-w-3xl mx-auto">
             Get in touch with us. We'd love to hear from you!
           </p>
         </Container>

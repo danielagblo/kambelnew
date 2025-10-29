@@ -47,33 +47,33 @@ export default async function HomePage() {
       <Header />
       
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-600 via-primary-700 to-primary-900 text-white">
+      <section className="relative min-h-[70vh] md:min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-600 via-primary-700 to-primary-900 text-white">
         <div className="absolute inset-0 bg-black/20" />
-        <Container className="relative z-10 text-center py-32">
-          <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
+        <Container className="relative z-10 text-center py-16 md:py-32">
+          <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold mb-4 md:mb-6 leading-tight px-4">
             {hero?.heroTitle || 'Welcome to Kambel Consult'}
           </h1>
-          <p className="text-xl md:text-2xl mb-8 text-gray-100 max-w-3xl mx-auto">
+          <p className="text-base sm:text-lg md:text-xl lg:text-2xl mb-6 md:mb-8 text-gray-100 max-w-3xl mx-auto px-4">
             {hero?.heroSubtitle || 'Your trusted partner in career development and business excellence'}
           </p>
           
           {/* Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12 mb-12">
-            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6">
-              <div className="text-4xl font-bold">{hero?.yearsExperience || '15+'}</div>
-              <div className="text-sm mt-2">{hero?.yearsLabel || 'Years Experience'}</div>
+          <div className="grid grid-cols-3 md:grid-cols-3 gap-2 md:gap-8 mt-8 md:mt-12 mb-8 md:mb-12 px-4">
+            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 md:p-6">
+              <div className="text-2xl md:text-4xl font-bold">{hero?.yearsExperience || '15+'}</div>
+              <div className="text-xs md:text-sm mt-1 md:mt-2">{hero?.yearsLabel || 'Years Experience'}</div>
             </div>
-            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6">
-              <div className="text-4xl font-bold">{hero?.clientsCount || '5000+'}</div>
-              <div className="text-sm mt-2">{hero?.clientsLabel || 'Clients'}</div>
+            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 md:p-6">
+              <div className="text-2xl md:text-4xl font-bold">{hero?.clientsCount || '5000+'}</div>
+              <div className="text-xs md:text-sm mt-1 md:mt-2">{hero?.clientsLabel || 'Clients'}</div>
             </div>
-            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6">
-              <div className="text-4xl font-bold">{hero?.publicationsCount || '50+'}</div>
-              <div className="text-sm mt-2">{hero?.publicationsLabel || 'Publications'}</div>
+            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 md:p-6">
+              <div className="text-2xl md:text-4xl font-bold">{hero?.publicationsCount || '50+'}</div>
+              <div className="text-xs md:text-sm mt-1 md:mt-2">{hero?.publicationsLabel || 'Publications'}</div>
             </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center px-4">
             <Link href="/consultancy">
               <Button size="lg" className="px-8">
                 Our Services <i className="fas fa-arrow-right ml-2" />
