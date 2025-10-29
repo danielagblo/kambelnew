@@ -4,11 +4,16 @@ import { Card, CardBody } from '@/components/ui/Card';
 import { format } from 'date-fns';
 
 async function getNewsletterSubscribers() {
-  return await prisma.newsletterSubscription.findMany({
-    orderBy: {
-      subscribedAt: 'desc',
-    },
-  });
+  try {
+    return await prisma.newsletterSubscription.findMany({
+      orderBy: {
+        subscribedAt: 'desc',
+      },
+    });
+  } catch (error) {
+    console.error('Error fetching newsletter subscribers:', error);
+    return [];
+  }
 }
 
 export default async function AdminNewsletterPage() {
