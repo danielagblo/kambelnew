@@ -1,12 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import AdminLayout from '@/components/admin/AdminLayout';
 import { Card, CardBody } from '@/components/ui/Card';
-import Button from '@/components/ui/Button';
+import ImageUpload from '@/components/ui/ImageUpload';
 import Input from '@/components/ui/Input';
 import Textarea from '@/components/ui/Textarea';
-import ImageUpload from '@/components/ui/ImageUpload';
+import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 
 interface AboutConfig {
@@ -61,7 +60,7 @@ export default function AdminAboutPage() {
   const [loading, setLoading] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<'profile' | 'journey' | 'education' | 'achievements' | 'speaking'>('profile');
-  
+
   const [formData, setFormData] = useState<AboutConfig>({
     heroYears: '15+',
     heroClients: '500+',
@@ -241,7 +240,7 @@ export default function AdminAboutPage() {
     try {
       const url = '/api/site/about/journey';
       const method = editingJourneyId ? 'PUT' : 'POST';
-      const body = editingJourneyId 
+      const body = editingJourneyId
         ? JSON.stringify({ ...journeyForm, id: editingJourneyId })
         : JSON.stringify(journeyForm);
 
@@ -312,12 +311,12 @@ export default function AdminAboutPage() {
     try {
       const url = '/api/site/about/education';
       const method = editingEducationId ? 'PUT' : 'POST';
-      const body = editingEducationId 
+      const body = editingEducationId
         ? JSON.stringify({ ...educationForm, id: editingEducationId })
         : JSON.stringify(educationForm);
 
       console.log('Sending education data:', body);
-      
+
       const response = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
@@ -326,10 +325,10 @@ export default function AdminAboutPage() {
 
       console.log('Response status:', response.status);
       console.log('Response ok?:', response.ok);
-      
+
       const responseText = await response.text();
       console.log('Raw response:', responseText);
-      
+
       let data;
       try {
         data = JSON.parse(responseText);
@@ -405,7 +404,7 @@ export default function AdminAboutPage() {
     try {
       const url = '/api/site/about/achievements';
       const method = editingAchievementId ? 'PUT' : 'POST';
-      const body = editingAchievementId 
+      const body = editingAchievementId
         ? JSON.stringify({ ...achievementForm, id: editingAchievementId })
         : JSON.stringify(achievementForm);
 
@@ -420,7 +419,7 @@ export default function AdminAboutPage() {
         fetchAchievements();
         setShowAddAchievement(false);
         setEditingAchievementId(null);
-        setAchievementForm({ title: '', year: '', description: '', category: '' });
+        setAchievementForm({ title: '', year: '', description: '' });
       } else {
         toast.error('Failed to save achievement');
       }
@@ -470,7 +469,7 @@ export default function AdminAboutPage() {
     try {
       const url = '/api/site/about/speaking';
       const method = editingSpeakingId ? 'PUT' : 'POST';
-      const body = editingSpeakingId 
+      const body = editingSpeakingId
         ? JSON.stringify({ ...speakingForm, id: editingSpeakingId })
         : JSON.stringify(speakingForm);
 
