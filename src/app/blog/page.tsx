@@ -36,37 +36,37 @@ export default async function BlogPage() {
       <section className="py-20">
         <Container>
           {posts.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               {posts.map((post) => (
                 <Card key={post.id} hover>
                   {post.coverImage && (
-                    <div className="h-48 relative bg-gray-200">
+                    <div className="h-36 sm:h-48 relative bg-gray-200">
                       <Image
                         src={post.coverImage}
                         alt={post.title}
                         fill
                         className="object-cover"
                         unoptimized={post.coverImage.startsWith('/uploads/')}
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                       />
                     </div>
                   )}
-                  <CardBody>
-                    <div className="flex items-center text-sm text-gray-500 mb-3">
+                  <CardBody className="p-4 sm:p-6">
+                    <div className="flex items-center text-xs sm:text-sm text-gray-500 mb-2 sm:mb-3">
                       <i className="fas fa-calendar mr-2" />
                       {formatDate(post.createdAt)}
                       <span className="mx-2">•</span>
                       <i className="fas fa-user mr-2" />
                       {post.author}
                     </div>
-                    <h2 className="text-xl font-semibold mb-3 line-clamp-2">
+                    <h2 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-3 line-clamp-2">
                       {post.title}
                     </h2>
-                    <p className="text-gray-600 mb-4 line-clamp-3">
+                    <p className="text-gray-600 text-xs sm:text-sm mb-3 sm:mb-4 line-clamp-3">
                       {post.excerpt || post.content.substring(0, 150)}...
                     </p>
                     <Link href={`/blog/${post.id}`}>
-                      <Button size="sm" variant="ghost">
+                      <Button size="sm" variant="ghost" className="text-xs sm:text-sm">
                         Read More <i className="fas fa-arrow-right ml-2" />
                       </Button>
                     </Link>

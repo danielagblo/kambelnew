@@ -136,7 +136,7 @@ export default function MasterclassPage() {
       <section className="py-20">
         <Container>
           {masterclasses.length > 0 ? (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
               {masterclasses.map((masterclass) => {
                 const videoId = masterclass.videoUrl ? getYouTubeVideoId(masterclass.videoUrl) : null;
                 
@@ -168,26 +168,26 @@ export default function MasterclassPage() {
                       />
                     </div>
                   ) : null}
-                  <CardBody>
-                    <div className="flex items-center justify-between mb-4">
-                      <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                  <CardBody className="p-4 sm:p-6">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-3 sm:mb-4 gap-2">
+                      <span className={`px-3 py-1 rounded-full text-xs sm:text-sm font-medium ${
                         masterclass.isUpcoming 
                           ? 'bg-green-100 text-green-800' 
                           : 'bg-gray-100 text-gray-800'
                       }`}>
                         {masterclass.isUpcoming ? 'Upcoming' : 'Past'}
                       </span>
-                      <span className="text-sm text-gray-500">
+                      <span className="text-xs sm:text-sm text-gray-500">
                         <i className="fas fa-users mr-1" />
                         {masterclass.seatsAvailable}/{masterclass.totalSeats} seats left
                       </span>
                     </div>
 
-                    <h2 className="text-2xl font-bold text-gray-900 mb-3">
+                    <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2 sm:mb-3 line-clamp-2">
                       {masterclass.title}
                     </h2>
 
-                    <div className="flex items-center text-gray-600 mb-4 flex-wrap gap-4">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center text-gray-600 mb-3 sm:mb-4 gap-2 sm:gap-4">
                       <div>
                         <i className="fas fa-calendar mr-2" />
                         {new Date(masterclass.date).toLocaleDateString()}
@@ -202,11 +202,11 @@ export default function MasterclassPage() {
                       </div>
                     </div>
 
-                    <p className="text-gray-600 mb-6">{masterclass.description}</p>
+                    <p className="text-gray-600 text-sm sm:text-base mb-4 sm:mb-6 line-clamp-3">{masterclass.description}</p>
 
-                    <div className="flex items-center justify-between">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                       {masterclass.price > 0 && (
-                        <div className="text-2xl font-bold text-primary-600">
+                        <div className="text-xl sm:text-2xl font-bold text-primary-600">
                           ${masterclass.price}
                         </div>
                       )}
