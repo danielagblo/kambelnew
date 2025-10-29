@@ -31,30 +31,30 @@ export default function Header() {
     <header
       className={cn(
         'fixed top-0 left-0 right-0 z-50 transition-all duration-300',
-        isScrolled ? 'bg-white shadow-md py-4' : 'bg-transparent py-6'
+        isScrolled ? 'bg-white shadow-md py-3 md:py-4' : 'bg-transparent py-4 md:py-6'
       )}
     >
-      <nav className="container mx-auto px-4">
+      <nav className="container mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-3">
+          <Link href="/" className="flex items-center space-x-2 sm:space-x-3">
             <img 
               src="/klogo.jpeg" 
               alt="Kambel Consult" 
               className={cn(
-                "h-14 w-auto transition-all duration-300 rounded-lg",
-                isScrolled ? "h-12" : "h-14"
+                "h-10 sm:h-12 md:h-14 w-auto transition-all duration-300 rounded-lg",
+                isScrolled ? "h-10 sm:h-11 md:h-12" : "h-10 sm:h-12 md:h-14"
               )}
             />
             <div className="flex flex-col">
               <span className={cn(
-                "text-xl font-bold leading-tight tracking-wide",
+                "text-lg sm:text-xl font-bold leading-tight tracking-wide",
                 isScrolled ? "text-primary-600" : "text-white"
               )}>
                 KAMBEL
               </span>
               <span className={cn(
-                "text-lg font-bold leading-tight tracking-wide",
+                "text-base sm:text-lg font-bold leading-tight tracking-wide",
                 isScrolled ? "text-accent-600" : "text-white opacity-90"
               )}>
                 CONSULT
@@ -63,7 +63,7 @@ export default function Header() {
           </Link>
 
           {/* Desktop Navigation */}
-          <ul className="hidden md:flex items-center space-x-6">
+          <ul className="hidden md:flex items-center space-x-4 lg:space-x-6">
             {navLinks.map((link) => (
               <li key={link.href}>
                 <Link

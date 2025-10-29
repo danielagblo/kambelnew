@@ -78,8 +78,8 @@ export default function Footer() {
 
   return (
     <footer className="bg-gray-900 text-white">
-      <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+      <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8">
           {/* About Section */}
           <div className="col-span-1 md:col-span-2">
             <img 
@@ -87,7 +87,7 @@ export default function Footer() {
               alt="Kambel Consult" 
               className="h-16 w-auto mb-4 rounded-lg"
             />
-            <p className="text-gray-400 mb-4">
+            <p className="text-gray-400 mb-4 text-sm sm:text-base">
               {footerAbout}
             </p>
             <div className="flex space-x-4">

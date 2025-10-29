@@ -89,11 +89,11 @@ export default async function HomePage() {
       </section>
 
       {/* Services Section */}
-      <section className="py-20 bg-gray-50">
+      <section className="py-12 md:py-20 bg-gray-50">
         <Container>
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Our Services</h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+          <div className="text-center mb-8 md:mb-12">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3 md:mb-4">Our Services</h2>
+            <p className="text-base sm:text-lg md:text-xl text-gray-600 max-w-2xl mx-auto px-4">
               Comprehensive consulting solutions tailored to your needs
             </p>
           </div>
@@ -121,11 +121,11 @@ export default async function HomePage() {
       </section>
 
       {/* Publications Section */}
-      <section className="py-20">
+      <section className="py-12 md:py-20">
         <Container>
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Featured Publications</h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+          <div className="text-center mb-8 md:mb-12">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3 md:mb-4">Featured Publications</h2>
+            <p className="text-base sm:text-lg md:text-xl text-gray-600 max-w-2xl mx-auto px-4">
               Explore our latest books and resources
             </p>
           </div>
@@ -173,11 +173,11 @@ export default async function HomePage() {
 
       {/* Masterclass Section */}
       {masterclasses.length > 0 && (
-        <section className="py-20 bg-gray-50">
+        <section className="py-12 md:py-20 bg-gray-50">
           <Container>
-            <div className="text-center mb-12">
-              <h2 className="text-4xl font-bold text-gray-900 mb-4">Upcoming Masterclasses</h2>
-              <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            <div className="text-center mb-8 md:mb-12">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3 md:mb-4">Upcoming Masterclasses</h2>
+              <p className="text-base sm:text-lg md:text-xl text-gray-600 max-w-2xl mx-auto px-4">
                 Join our expert-led training sessions
               </p>
             </div>
@@ -230,11 +230,11 @@ export default async function HomePage() {
 
       {/* Blog Section */}
       {blogPosts.length > 0 && (
-        <section className="py-20">
+        <section className="py-12 md:py-20">
           <Container>
-            <div className="text-center mb-12">
-              <h2 className="text-4xl font-bold text-gray-900 mb-4">Latest Insights</h2>
-              <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            <div className="text-center mb-8 md:mb-12">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3 md:mb-4">Latest Insights</h2>
+              <p className="text-base sm:text-lg md:text-xl text-gray-600 max-w-2xl mx-auto px-4">
                 Read our latest articles and updates
               </p>
             </div>
