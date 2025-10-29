@@ -36,38 +36,36 @@ export default async function BlogPage() {
       <section className="py-20">
         <Container>
           {posts.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-4 md:gap-6">
               {posts.map((post) => (
                 <Card key={post.id} hover>
                   {post.coverImage && (
-                    <div className="h-36 sm:h-48 relative bg-gray-200">
+                    <div className="h-28 sm:h-36 md:h-48 relative bg-gray-200">
                       <Image
                         src={post.coverImage}
                         alt={post.title}
                         fill
                         className="object-cover"
                         unoptimized={post.coverImage.startsWith('/uploads/')}
-                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 50vw, 33vw"
                       />
                     </div>
                   )}
-                  <CardBody className="p-4 sm:p-6">
-                    <div className="flex items-center text-xs sm:text-sm text-gray-500 mb-2 sm:mb-3">
-                      <i className="fas fa-calendar mr-2" />
-                      {formatDate(post.createdAt)}
-                      <span className="mx-2">•</span>
-                      <i className="fas fa-user mr-2" />
-                      {post.author}
+                  <CardBody className="p-2 sm:p-4 md:p-6">
+                    <div className="flex items-center text-[10px] sm:text-xs md:text-sm text-gray-500 mb-1 sm:mb-2 md:mb-3">
+                      <i className="fas fa-calendar mr-1" />
+                      <span className="hidden sm:inline">{formatDate(post.createdAt)}</span>
+                      <span className="sm:hidden">{new Date(post.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
                     </div>
-                    <h2 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-3 line-clamp-2">
+                    <h2 className="text-sm sm:text-base md:text-lg lg:text-xl font-semibold mb-1 sm:mb-2 md:mb-3 line-clamp-2">
                       {post.title}
                     </h2>
-                    <p className="text-gray-600 text-xs sm:text-sm mb-3 sm:mb-4 line-clamp-3">
+                    <p className="text-gray-600 text-[10px] sm:text-xs md:text-sm mb-2 sm:mb-3 md:mb-4 line-clamp-2 hidden sm:block">
                       {post.excerpt || post.content.substring(0, 150)}...
                     </p>
                     <Link href={`/blog/${post.id}`}>
-                      <Button size="sm" variant="ghost" className="text-xs sm:text-sm">
-                        Read More <i className="fas fa-arrow-right ml-2" />
+                      <Button size="sm" variant="ghost" className="text-[10px] sm:text-xs md:text-sm w-full">
+                        Read More
                       </Button>
                     </Link>
                   </CardBody>

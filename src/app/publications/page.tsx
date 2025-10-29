@@ -115,7 +115,7 @@ export default function PublicationsPage() {
               </div>
 
               {/* Books Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+              <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-4 md:gap-6">
                 {filteredBooks.map((book) => (
               <Card key={book.id} hover>
                 <div className="aspect-[3/4] relative bg-gray-200">
@@ -126,47 +126,47 @@ export default function PublicationsPage() {
                       fill
                       className="object-cover"
                       unoptimized={book.coverImage.startsWith('/uploads/')}
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+                      sizes="(max-width: 640px) 50vw, (max-width: 1200px) 33vw, 25vw"
                     />
                   ) : (
                     <div className="flex items-center justify-center h-full bg-gray-300">
-                      <i className="fas fa-book text-6xl text-gray-500" />
+                      <i className="fas fa-book text-3xl sm:text-6xl text-gray-500" />
                     </div>
                   )}
                 </div>
-                <CardBody className="p-4 sm:p-6">
+                <CardBody className="p-2 sm:p-4 md:p-6">
                   {book.category && (
-                    <div className="text-xs text-primary-600 font-semibold mb-1 sm:mb-2 uppercase">
+                    <div className="text-[10px] sm:text-xs text-primary-600 font-semibold mb-1 uppercase hidden sm:block">
                       {book.category.name}
                     </div>
                   )}
-                  <h3 className="text-base sm:text-lg font-semibold mb-1 line-clamp-2">{book.title}</h3>
-                  <p className="text-xs sm:text-sm text-gray-600 mb-2 sm:mb-3">By {book.author}</p>
+                  <h3 className="text-sm sm:text-base md:text-lg font-semibold mb-1 line-clamp-2">{book.title}</h3>
+                  <p className="text-[10px] sm:text-xs md:text-sm text-gray-600 mb-2 hidden sm:block">By {book.author}</p>
                   
                   {book.description && (
-                    <p className="text-xs sm:text-sm text-gray-600 mb-3 sm:mb-4 line-clamp-2">
+                    <p className="text-xs sm:text-sm text-gray-600 mb-2 sm:mb-3 md:mb-4 line-clamp-2 hidden sm:block">
                       {book.description}
                     </p>
                   )}
 
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-3 sm:mb-4 gap-2">
-                    {book.pages > 0 && (
-                      <span className="text-xs sm:text-sm text-gray-500">
-                        <i className="fas fa-file-alt mr-1" />
-                        {book.pages} pages
+                  <div className="flex items-center justify-between mb-2 sm:mb-3 md:mb-4 gap-1">
+                    {book.price > 0 && (
+                      <span className="text-sm sm:text-base md:text-lg font-bold text-primary-600">
+                        {formatCurrency(Number(book.price))}
                       </span>
                     )}
-                    {book.price > 0 && (
-                      <span className="text-base sm:text-lg font-bold text-primary-600">
-                        {formatCurrency(Number(book.price))}
+                    {book.pages > 0 && (
+                      <span className="text-[10px] sm:text-xs text-gray-500 hidden sm:inline">
+                        <i className="fas fa-file-alt mr-1" />
+                        {book.pages}p
                       </span>
                     )}
                   </div>
 
                   {book.purchaseLink && (
                     <a href={book.purchaseLink} target="_blank" rel="noopener noreferrer">
-                      <Button size="sm" className="w-full text-xs sm:text-sm">
-                        Get Book <i className="fas fa-external-link-alt ml-2" />
+                      <Button size="sm" className="w-full text-[10px] sm:text-xs md:text-sm">
+                        Get Book
                       </Button>
                     </a>
                   )}
