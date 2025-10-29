@@ -1,7 +1,17 @@
-import { existsSync } from 'fs';
-import { mkdir, writeFile } from 'fs/promises';
+import { v2 as cloudinary } from 'cloudinary';
 import { NextRequest, NextResponse } from 'next/server';
-import { join } from 'path';
+import { Readable } from 'stream';
+
+// Configure Cloudinary from environment. Prefer CLOUDINARY_URL, or individual vars.
+if (process.env.CLOUDINARY_URL) {
+  cloudinary.config({ url: process.env.CLOUDINARY_URL });
+} else if (process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET) {
+  cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+  });
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -25,41 +35,40 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'File size too large (max 10MB)' }, { status: 400 });
     }
 
-    // Create upload directory if it doesn't exist
-    const uploadDir = join(process.cwd(), 'public', 'uploads', folder);
-    if (!existsSync(uploadDir)) {
-      await mkdir(uploadDir, { recursive: true });
-    }
-
-    // Generate unique filename
-    const timestamp = Date.now();
-    const originalName = file.name.replace(/\s+/g, '-');
-    const filename = `${timestamp}-${originalName}`;
-    
-    // Save file
+    // Convert file to buffer
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
-    const filepath = join(uploadDir, filename);
-    await writeFile(filepath, buffer);
 
-    // Return file URL (relative) and absolute URL for diagnostics
-    const fileUrl = `/uploads/${folder}/${filename}`;
+    // Ensure Cloudinary configuration exists
+    const cloudConfigured = !!(process.env.CLOUDINARY_URL || (process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET));
+    if (!cloudConfigured) {
+      return NextResponse.json({ error: 'Cloudinary not configured. Set CLOUDINARY_URL or CLOUDINARY_CLOUD_NAME/CLOUDINARY_API_KEY/CLOUDINARY_API_SECRET.' }, { status: 500 });
+    }
 
-    // Build absolute URL using request headers (fall back to https)
-    const proto = request.headers.get('x-forwarded-proto') || request.headers.get('x-forwarded-protocol') || 'https';
-    const host = request.headers.get('host') || 'localhost:3000';
-    const absoluteUrl = `${proto}://${host}${fileUrl}`;
+    // Upload to Cloudinary using upload_stream
+    const uploadResult: any = await new Promise((resolve, reject) => {
+      const opts: Record<string, any> = { folder };
+      const stream = cloudinary.uploader.upload_stream(opts, (error, result) => {
+        if (error) return reject(error);
+        resolve(result);
+      });
 
-    const existsOnDisk = existsSync(filepath);
+      // Pipe buffer into the upload stream
+      const readable = Readable.from(buffer);
+      readable.pipe(stream);
+    });
 
-    console.log('Upload result:', { filepath, existsOnDisk, fileUrl, absoluteUrl });
+    // uploadResult contains fields like secure_url, url, public_id
+    const fileUrl = uploadResult.secure_url || uploadResult.url;
+
+    console.log('Cloudinary upload result:', { folder, public_id: uploadResult.public_id, url: fileUrl });
 
     return NextResponse.json({
       message: 'File uploaded successfully',
-      filename,
+      filename: uploadResult.original_filename || uploadResult.public_id,
       url: fileUrl,
-      absoluteUrl,
-      existsOnDisk,
+      public_id: uploadResult.public_id,
+      raw: uploadResult,
     });
   } catch (error) {
     console.error('Error uploading file:', error);

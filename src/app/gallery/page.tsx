@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import Header from '@/components/layout/Header';
-import Footer from '@/components/layout/Footer';
 import Container from '@/components/layout/Container';
-import Image from 'next/image';
+import Footer from '@/components/layout/Footer';
+import Header from '@/components/layout/Header';
+import SmartImage from '@/components/ui/SmartImage';
+import { useEffect, useState } from 'react';
 
 interface GalleryItem {
   id: string;
@@ -53,7 +53,7 @@ export default function GalleryPage() {
   return (
     <>
       <Header />
-      
+
       {/* Hero Section */}
       <section className="pt-24 md:pt-32 pb-12 md:pb-20 bg-gradient-to-br from-primary-600 to-primary-900 text-white">
         <Container className="text-center px-4">
@@ -70,32 +70,29 @@ export default function GalleryPage() {
           <div className="flex justify-center gap-4">
             <button
               onClick={() => setFilter('all')}
-              className={`px-6 py-2 rounded-lg font-medium transition-colors ${
-                filter === 'all'
+              className={`px-6 py-2 rounded-lg font-medium transition-colors ${filter === 'all'
                   ? 'bg-primary-600 text-white'
                   : 'bg-white text-gray-700 hover:bg-gray-100'
-              }`}
+                }`}
             >
               All
             </button>
             <button
               onClick={() => setFilter('image')}
-              className={`px-6 py-2 rounded-lg font-medium transition-colors ${
-                filter === 'image'
+              className={`px-6 py-2 rounded-lg font-medium transition-colors ${filter === 'image'
                   ? 'bg-primary-600 text-white'
                   : 'bg-white text-gray-700 hover:bg-gray-100'
-              }`}
+                }`}
             >
               <i className="fas fa-image mr-2" />
               Images
             </button>
             <button
               onClick={() => setFilter('video')}
-              className={`px-6 py-2 rounded-lg font-medium transition-colors ${
-                filter === 'video'
+              className={`px-6 py-2 rounded-lg font-medium transition-colors ${filter === 'video'
                   ? 'bg-primary-600 text-white'
                   : 'bg-white text-gray-700 hover:bg-gray-100'
-              }`}
+                }`}
             >
               <i className="fas fa-video mr-2" />
               Videos
@@ -116,7 +113,7 @@ export default function GalleryPage() {
                   onClick={() => setSelectedItem(item)}
                 >
                   {item.mediaType === 'image' && item.image ? (
-                    <Image
+                    <SmartImage
                       src={item.image}
                       alt={item.title}
                       fill
@@ -127,14 +124,14 @@ export default function GalleryPage() {
                   ) : item.mediaType === 'video' ? (
                     <>
                       {item.thumbnail ? (
-                        <Image
+                        <SmartImage
                           src={item.thumbnail}
                           alt={item.title}
                           fill
                           className="object-cover group-hover:scale-110 transition-transform duration-300"
                         />
                       ) : item.videoUrl && getYouTubeVideoId(item.videoUrl) ? (
-                        <Image
+                        <SmartImage
                           src={`https://img.youtube.com/vi/${getYouTubeVideoId(item.videoUrl)}/maxresdefault.jpg`}
                           alt={item.title}
                           fill
@@ -154,7 +151,7 @@ export default function GalleryPage() {
                       <i className="fas fa-image text-6xl text-gray-400" />
                     </div>
                   )}
-                  
+
                   {/* Overlay */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
                     <div className="absolute bottom-0 left-0 right-0 p-4 space-y-2">
@@ -177,7 +174,7 @@ export default function GalleryPage() {
                       </p>
                     </div>
                   </div>
-                  
+
                   {item.isFeatured && (
                     <div className="absolute top-2 right-2 bg-yellow-500 text-white px-2 py-1 rounded text-xs font-medium">
                       <i className="fas fa-star mr-1" />
@@ -208,7 +205,7 @@ export default function GalleryPage() {
           >
             <i className="fas fa-times" />
           </button>
-          
+
           <div className="max-w-7xl w-full h-[90vh] grid grid-cols-1 lg:grid-cols-2 gap-6" onClick={(e) => e.stopPropagation()}>
             {/* Left Side - Scrollable Details */}
             <div className="flex flex-col text-white bg-black/30 rounded-lg backdrop-blur-sm overflow-hidden">
@@ -229,7 +226,7 @@ export default function GalleryPage() {
             <div className="flex items-center justify-center overflow-hidden">
               {selectedItem.mediaType === 'image' && selectedItem.image ? (
                 <div className="relative w-full h-full rounded-lg overflow-hidden">
-                  <Image
+                  <SmartImage
                     src={selectedItem.image}
                     alt={selectedItem.title}
                     fill

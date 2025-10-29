@@ -1,12 +1,12 @@
-import Header from '@/components/layout/Header';
-import Footer from '@/components/layout/Footer';
 import Container from '@/components/layout/Container';
-import { Card, CardBody } from '@/components/ui/Card';
+import Footer from '@/components/layout/Footer';
+import Header from '@/components/layout/Header';
 import Button from '@/components/ui/Button';
-import Link from 'next/link';
-import Image from 'next/image';
+import { Card, CardBody } from '@/components/ui/Card';
+import SmartImage from '@/components/ui/SmartImage';
 import { prisma } from '@/lib/prisma';
 import { formatDate } from '@/lib/utils';
+import Link from 'next/link';
 
 async function getBlogPosts() {
   return await prisma.blogPost.findMany({
@@ -21,7 +21,7 @@ export default async function BlogPage() {
   return (
     <>
       <Header />
-      
+
       {/* Hero Section */}
       <section className="pt-24 md:pt-32 pb-12 md:pb-20 bg-gradient-to-br from-primary-600 to-primary-900 text-white">
         <Container className="text-center px-4">
@@ -41,7 +41,7 @@ export default async function BlogPage() {
                 <Card key={post.id} hover>
                   {post.coverImage && (
                     <div className="h-28 sm:h-36 md:h-48 relative bg-gray-200">
-                      <Image
+                      <SmartImage
                         src={post.coverImage}
                         alt={post.title}
                         fill

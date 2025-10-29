@@ -1,14 +1,14 @@
 'use client';
 
-import { useState, FormEvent, useEffect } from 'react';
-import Header from '@/components/layout/Header';
-import Footer from '@/components/layout/Footer';
 import Container from '@/components/layout/Container';
-import { Card, CardBody } from '@/components/ui/Card';
+import Footer from '@/components/layout/Footer';
+import Header from '@/components/layout/Header';
 import Button from '@/components/ui/Button';
+import { Card, CardBody } from '@/components/ui/Card';
 import Input from '@/components/ui/Input';
+import SmartImage from '@/components/ui/SmartImage';
 import Textarea from '@/components/ui/Textarea';
-import Image from 'next/image';
+import { FormEvent, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 
 interface Masterclass {
@@ -121,7 +121,7 @@ export default function MasterclassPage() {
   return (
     <>
       <Header />
-      
+
       {/* Hero Section */}
       <section className="pt-24 md:pt-32 pb-12 md:pb-20 bg-gradient-to-br from-primary-600 to-primary-900 text-white">
         <Container className="text-center px-4">
@@ -139,95 +139,94 @@ export default function MasterclassPage() {
             <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-2 sm:gap-3 md:gap-6">
               {masterclasses.map((masterclass) => {
                 const videoId = masterclass.videoUrl ? getYouTubeVideoId(masterclass.videoUrl) : null;
-                
+
                 return (
-                <Card key={masterclass.id} hover>
-                  {/* Show YouTube video if available, otherwise show cover image */}
-                  {videoId ? (
-                    <div className="aspect-video relative bg-black">
-                      <iframe
-                        width="100%"
-                        height="100%"
-                        src={`https://www.youtube.com/embed/${videoId}`}
-                        title={masterclass.title}
-                        frameBorder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
-                        className="absolute inset-0"
-                      />
-                    </div>
-                  ) : masterclass.coverImage ? (
-                    <div className="h-28 sm:h-40 md:h-48 md:aspect-video md:h-auto relative bg-gray-200">
-                      <Image
-                        src={masterclass.coverImage}
-                        alt={masterclass.title}
-                        fill
-                        className="object-cover"
-                        unoptimized={masterclass.coverImage.startsWith('/uploads/')}
-                        sizes="(max-width: 768px) 50vw, 50vw"
-                      />
-                    </div>
-                  ) : null}
-                  <CardBody className="p-2 sm:p-3 md:p-4 lg:p-6">
-                    <div className="flex flex-col items-start justify-between mb-2 sm:mb-3 md:mb-4 gap-1 sm:gap-2">
-                      <span className={`px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium whitespace-nowrap ${
-                        masterclass.isUpcoming 
-                          ? 'bg-green-100 text-green-800' 
-                          : 'bg-gray-100 text-gray-800'
-                      }`}>
-                        {masterclass.isUpcoming ? 'Upcoming' : 'Past'}
-                      </span>
-                      <span className="text-[10px] sm:text-xs text-gray-500 hidden sm:inline">
-                        <i className="fas fa-users mr-1" />
-                        {masterclass.seatsAvailable}/{masterclass.totalSeats}
-                      </span>
-                    </div>
-
-                    <h2 className="text-sm sm:text-base md:text-xl lg:text-2xl font-bold text-gray-900 mb-1 sm:mb-2 line-clamp-2">
-                      {masterclass.title}
-                    </h2>
-
-                    <div className="space-y-0.5 sm:space-y-1 mb-2 sm:mb-3">
-                      <div className="text-[10px] sm:text-xs md:text-sm text-gray-600">
-                        <i className="fas fa-calendar mr-1" />
-                        {new Date(masterclass.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                  <Card key={masterclass.id} hover>
+                    {/* Show YouTube video if available, otherwise show cover image */}
+                    {videoId ? (
+                      <div className="aspect-video relative bg-black">
+                        <iframe
+                          width="100%"
+                          height="100%"
+                          src={`https://www.youtube.com/embed/${videoId}`}
+                          title={masterclass.title}
+                          frameBorder="0"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                          className="absolute inset-0"
+                        />
                       </div>
-                      <div className="text-[10px] sm:text-xs md:text-sm text-gray-600 hidden sm:block">
-                        <i className="fas fa-clock mr-1" />
-                        {masterclass.duration}
+                    ) : masterclass.coverImage ? (
+                      <div className="h-28 sm:h-40 md:h-48 md:aspect-video md:h-auto relative bg-gray-200">
+                        <SmartImage
+                          src={masterclass.coverImage}
+                          alt={masterclass.title}
+                          fill
+                          className="object-cover"
+                          unoptimized={masterclass.coverImage.startsWith('/uploads/')}
+                          sizes="(max-width: 768px) 50vw, 50vw"
+                        />
                       </div>
-                    </div>
+                    ) : null}
+                    <CardBody className="p-2 sm:p-3 md:p-4 lg:p-6">
+                      <div className="flex flex-col items-start justify-between mb-2 sm:mb-3 md:mb-4 gap-1 sm:gap-2">
+                        <span className={`px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium whitespace-nowrap ${masterclass.isUpcoming
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-gray-100 text-gray-800'
+                          }`}>
+                          {masterclass.isUpcoming ? 'Upcoming' : 'Past'}
+                        </span>
+                        <span className="text-[10px] sm:text-xs text-gray-500 hidden sm:inline">
+                          <i className="fas fa-users mr-1" />
+                          {masterclass.seatsAvailable}/{masterclass.totalSeats}
+                        </span>
+                      </div>
 
-                    <p className="text-gray-600 text-[10px] sm:text-xs md:text-sm mb-2 sm:mb-3 md:mb-4 line-clamp-2 hidden sm:block">{masterclass.description}</p>
+                      <h2 className="text-sm sm:text-base md:text-xl lg:text-2xl font-bold text-gray-900 mb-1 sm:mb-2 line-clamp-2">
+                        {masterclass.title}
+                      </h2>
 
-                    <div className="flex items-center justify-between gap-1 sm:gap-2 mt-auto">
-                      {masterclass.price > 0 && (
-                        <div className="text-sm sm:text-lg md:text-xl lg:text-2xl font-bold text-primary-600">
-                          ${masterclass.price}
+                      <div className="space-y-0.5 sm:space-y-1 mb-2 sm:mb-3">
+                        <div className="text-[10px] sm:text-xs md:text-sm text-gray-600">
+                          <i className="fas fa-calendar mr-1" />
+                          {new Date(masterclass.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                         </div>
-                      )}
-                      
-                      {/* Show "Watch Recording" if video exists and class has passed, otherwise "Register" */}
-                      {videoId && !masterclass.isUpcoming ? (
-                        <div className="bg-accent-50 text-accent-600 px-2 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium flex items-center">
-                          <i className="fas fa-play-circle mr-1 sm:mr-2" />
-                          <span className="hidden sm:inline">Recording Available</span>
-                          <span className="sm:hidden">Recording</span>
+                        <div className="text-[10px] sm:text-xs md:text-sm text-gray-600 hidden sm:block">
+                          <i className="fas fa-clock mr-1" />
+                          {masterclass.duration}
                         </div>
-                      ) : (
-                        <Button
-                          size="sm"
-                          onClick={() => handleRegister(masterclass)}
-                          className="text-xs sm:text-sm ml-auto"
-                          disabled={masterclass.seatsAvailable === 0}
-                        >
-                          {masterclass.seatsAvailable === 0 ? 'Fully Booked' : 'Register Now'}
-                        </Button>
-                      )}
-                    </div>
-                  </CardBody>
-                </Card>
-              );
+                      </div>
+
+                      <p className="text-gray-600 text-[10px] sm:text-xs md:text-sm mb-2 sm:mb-3 md:mb-4 line-clamp-2 hidden sm:block">{masterclass.description}</p>
+
+                      <div className="flex items-center justify-between gap-1 sm:gap-2 mt-auto">
+                        {masterclass.price > 0 && (
+                          <div className="text-sm sm:text-lg md:text-xl lg:text-2xl font-bold text-primary-600">
+                            ${masterclass.price}
+                          </div>
+                        )}
+
+                        {/* Show "Watch Recording" if video exists and class has passed, otherwise "Register" */}
+                        {videoId && !masterclass.isUpcoming ? (
+                          <div className="bg-accent-50 text-accent-600 px-2 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium flex items-center">
+                            <i className="fas fa-play-circle mr-1 sm:mr-2" />
+                            <span className="hidden sm:inline">Recording Available</span>
+                            <span className="sm:hidden">Recording</span>
+                          </div>
+                        ) : (
+                          <Button
+                            size="sm"
+                            onClick={() => handleRegister(masterclass)}
+                            className="text-xs sm:text-sm ml-auto"
+                            disabled={masterclass.seatsAvailable === 0}
+                          >
+                            {masterclass.seatsAvailable === 0 ? 'Fully Booked' : 'Register Now'}
+                          </Button>
+                        )}
+                      </div>
+                    </CardBody>
+                  </Card>
+                );
               })}
             </div>
           ) : (

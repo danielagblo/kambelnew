@@ -1,16 +1,16 @@
-import Header from '@/components/layout/Header';
-import Footer from '@/components/layout/Footer';
 import Container from '@/components/layout/Container';
-import { Card, CardBody } from '@/components/ui/Card';
+import Footer from '@/components/layout/Footer';
+import Header from '@/components/layout/Header';
 import Button from '@/components/ui/Button';
-import Link from 'next/link';
-import Image from 'next/image';
+import { Card, CardBody } from '@/components/ui/Card';
+import SmartImage from '@/components/ui/SmartImage';
 import { prisma } from '@/lib/prisma';
 import { unstable_noStore as noStore } from 'next/cache';
+import Link from 'next/link';
 
 async function getHomeData() {
   noStore();
-  
+
   const [hero, services, publications, blogPosts, masterclasses] = await Promise.all([
     prisma.heroConfig.findFirst({ where: { isActive: true } }),
     prisma.consultancyService.findMany({
@@ -45,7 +45,7 @@ export default async function HomePage() {
   return (
     <>
       <Header />
-      
+
       {/* Hero Section */}
       <section className="relative min-h-[70vh] md:min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-600 via-primary-700 to-primary-900 text-white">
         <div className="absolute inset-0 bg-black/20" />
@@ -56,7 +56,7 @@ export default async function HomePage() {
           <p className="text-base sm:text-lg md:text-xl lg:text-2xl mb-6 md:mb-8 text-gray-100 max-w-3xl mx-auto px-4">
             {hero?.heroSubtitle || 'Your trusted partner in career development and business excellence'}
           </p>
-          
+
           {/* Stats */}
           <div className="grid grid-cols-3 md:grid-cols-3 gap-2 md:gap-8 mt-8 md:mt-12 mb-8 md:mb-12 px-4">
             <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 md:p-6">
@@ -135,7 +135,7 @@ export default async function HomePage() {
               <Card key={book.id} hover>
                 <div className="aspect-[3/4] relative bg-gray-200">
                   {book.coverImage && (
-                    <Image
+                    <SmartImage
                       src={book.coverImage}
                       alt={book.title}
                       fill
@@ -187,7 +187,7 @@ export default async function HomePage() {
                 <Card key={masterclass.id} hover>
                   {masterclass.coverImage && (
                     <div className="aspect-video relative bg-gray-200">
-                      <Image
+                      <SmartImage
                         src={masterclass.coverImage}
                         alt={masterclass.title}
                         fill
@@ -244,7 +244,7 @@ export default async function HomePage() {
                 <Card key={post.id} hover>
                   {post.coverImage && (
                     <div className="aspect-video relative bg-gray-200">
-                      <Image
+                      <SmartImage
                         src={post.coverImage}
                         alt={post.title}
                         fill
