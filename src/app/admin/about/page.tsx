@@ -237,19 +237,36 @@ export default function AdminAboutPage() {
 
     setIsLoading(true);
     try {
+      // Ensure profilePicture URL is properly formatted (should start with /uploads/)
+      const submitData = {
+        ...formData,
+        profilePicture: formData.profilePicture?.trim() || '',
+      };
+
       const response = await fetch('/api/site/about', {
         method: formData.id ? 'PUT' : 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(submitData),
       });
 
       if (response.ok) {
+        const updatedData = await response.json();
+        // Update formData with the response to ensure IDs and data are in sync
+        setFormData(prev => ({
+          ...prev,
+          ...updatedData,
+          id: updatedData.id,
+        }));
         toast.success('About page updated successfully!');
-        fetchAboutConfig();
+        // Optionally refetch to ensure everything is in sync
+        await fetchAboutConfig();
       } else {
-        toast.error('Failed to update about page');
+        const errorData = await response.json().catch(() => ({ error: 'Failed to update' }));
+        console.error('Update error:', errorData);
+        toast.error(errorData.error || 'Failed to update about page');
       }
     } catch (error) {
+      console.error('Submit error:', error);
       toast.error('An error occurred');
     } finally {
       setIsLoading(false);

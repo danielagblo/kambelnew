@@ -103,6 +103,10 @@ export default async function AboutPage() {
                   alt={about.profileName}
                   fill
                   className="object-cover"
+                  unoptimized={about.profilePicture.startsWith('/uploads/')}
+                  onError={(e) => {
+                    console.error('Image failed to load:', about.profilePicture);
+                  }}
                 />
               </div>
             ) : (

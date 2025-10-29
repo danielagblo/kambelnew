@@ -48,15 +48,11 @@ export default function ImageUpload({
       return;
     }
 
-    // Show preview immediately
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setPreview(reader.result as string);
-    };
-    reader.readAsDataURL(file);
-
-    // Upload file
+    // Upload file first, then show preview from uploaded URL
     setUploading(true);
+    
+    // Temporarily show loading state
+    setPreview(''); // Clear preview until upload completes
     
     const uploadFormData = new FormData();
     uploadFormData.append('file', file);
@@ -66,20 +62,30 @@ export default function ImageUpload({
       method: 'POST',
       body: uploadFormData,
     })
-      .then(response => response.json())
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Upload failed');
+        }
+        return response.json();
+      })
       .then(data => {
         if (data.url) {
-          onChange(data.url);
-          setPreview(data.url);
+          // Always use the URL from the server, not the data URL
+          const uploadedUrl = data.url;
+          onChange(uploadedUrl);
+          setPreview(uploadedUrl);
           toast.success('Image uploaded successfully!');
         } else {
           toast.error(data.error || 'Failed to upload image');
+          // Reset to previous value if upload fails
           setPreview(value || '');
         }
         setUploading(false);
       })
-      .catch(() => {
+      .catch((error) => {
+        console.error('Upload error:', error);
         toast.error('An error occurred while uploading');
+        // Reset to previous value on error
         setPreview(value || '');
         setUploading(false);
       });
@@ -107,6 +113,13 @@ export default function ImageUpload({
               src={preview}
               alt="Preview"
               className="w-full h-48 object-cover rounded-lg border border-gray-300"
+              onError={(e) => {
+                console.error('Preview image failed to load:', preview);
+                // If it's a relative path, try adding domain or show error
+                if (preview.startsWith('/')) {
+                  e.currentTarget.style.display = 'none';
+                }
+              }}
             />
             <button
               type="button"
