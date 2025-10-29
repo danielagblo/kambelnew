@@ -136,7 +136,7 @@ export default function MasterclassPage() {
       <section className="py-12 md:py-20">
         <Container>
           {masterclasses.length > 0 ? (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-2 sm:gap-3 md:gap-6">
               {masterclasses.map((masterclass) => {
                 const videoId = masterclass.videoUrl ? getYouTubeVideoId(masterclass.videoUrl) : null;
                 
@@ -157,56 +157,52 @@ export default function MasterclassPage() {
                       />
                     </div>
                   ) : masterclass.coverImage ? (
-                    <div className="h-40 sm:h-48 md:aspect-video md:h-auto relative bg-gray-200">
+                    <div className="h-28 sm:h-40 md:h-48 md:aspect-video md:h-auto relative bg-gray-200">
                       <Image
                         src={masterclass.coverImage}
                         alt={masterclass.title}
                         fill
                         className="object-cover"
                         unoptimized={masterclass.coverImage.startsWith('/uploads/')}
-                        sizes="(max-width: 768px) 100vw, 50vw"
+                        sizes="(max-width: 768px) 50vw, 50vw"
                       />
                     </div>
                   ) : null}
-                  <CardBody className="p-3 sm:p-4 md:p-6">
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-3 sm:mb-4 gap-2">
-                      <span className={`px-3 py-1 rounded-full text-xs sm:text-sm font-medium ${
+                  <CardBody className="p-2 sm:p-3 md:p-4 lg:p-6">
+                    <div className="flex flex-col items-start justify-between mb-2 sm:mb-3 md:mb-4 gap-1 sm:gap-2">
+                      <span className={`px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium whitespace-nowrap ${
                         masterclass.isUpcoming 
                           ? 'bg-green-100 text-green-800' 
                           : 'bg-gray-100 text-gray-800'
                       }`}>
                         {masterclass.isUpcoming ? 'Upcoming' : 'Past'}
                       </span>
-                      <span className="text-xs sm:text-sm text-gray-500">
+                      <span className="text-[10px] sm:text-xs text-gray-500 hidden sm:inline">
                         <i className="fas fa-users mr-1" />
-                        {masterclass.seatsAvailable}/{masterclass.totalSeats} seats left
+                        {masterclass.seatsAvailable}/{masterclass.totalSeats}
                       </span>
                     </div>
 
-                    <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mb-2 line-clamp-2">
+                    <h2 className="text-sm sm:text-base md:text-xl lg:text-2xl font-bold text-gray-900 mb-1 sm:mb-2 line-clamp-2">
                       {masterclass.title}
                     </h2>
 
-                    <div className="flex flex-wrap items-start text-xs sm:text-sm text-gray-600 mb-2 sm:mb-3 gap-x-3 gap-y-1">
-                      <div>
+                    <div className="space-y-0.5 sm:space-y-1 mb-2 sm:mb-3">
+                      <div className="text-[10px] sm:text-xs md:text-sm text-gray-600">
                         <i className="fas fa-calendar mr-1" />
-                        {new Date(masterclass.date).toLocaleDateString()}
+                        {new Date(masterclass.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                       </div>
-                      <div>
+                      <div className="text-[10px] sm:text-xs md:text-sm text-gray-600 hidden sm:block">
                         <i className="fas fa-clock mr-1" />
                         {masterclass.duration}
                       </div>
-                      <div className="w-full">
-                        <i className="fas fa-user mr-1" />
-                        {masterclass.instructor}
-                      </div>
                     </div>
 
-                    <p className="text-gray-600 text-xs sm:text-sm mb-3 sm:mb-4 line-clamp-2">{masterclass.description}</p>
+                    <p className="text-gray-600 text-[10px] sm:text-xs md:text-sm mb-2 sm:mb-3 md:mb-4 line-clamp-2 hidden sm:block">{masterclass.description}</p>
 
-                    <div className="flex items-center justify-between gap-2 mt-auto">
+                    <div className="flex items-center justify-between gap-1 sm:gap-2 mt-auto">
                       {masterclass.price > 0 && (
-                        <div className="text-lg sm:text-xl md:text-2xl font-bold text-primary-600">
+                        <div className="text-sm sm:text-lg md:text-xl lg:text-2xl font-bold text-primary-600">
                           ${masterclass.price}
                         </div>
                       )}
