@@ -4,11 +4,16 @@ import { Card, CardBody } from '@/components/ui/Card';
 import { format } from 'date-fns';
 
 async function getContactMessages() {
-  return await prisma.contactMessage.findMany({
-    orderBy: {
-      createdAt: 'desc',
-    },
-  });
+  try {
+    return await prisma.contactMessage.findMany({
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+  } catch (error) {
+    console.error('Error fetching contact messages:', error);
+    return [];
+  }
 }
 
 export default async function AdminContactsPage() {
