@@ -2,59 +2,45 @@
   "name": "kambel-consult",
   "version": "1.0.0",
   "private": true,
-  "engines": {
-    "node": "22.x",
-    "npm": "10.x"
-  },
   "scripts": {
     "dev": "next dev",
-    "prebuild": "node scripts/check-env.js",
-    "build": "prisma generate && next build",
+    "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "postinstall": "prisma generate",
     "prisma:generate": "prisma generate",
     "prisma:push": "prisma db push",
-    "prisma:migrate": "prisma migrate deploy",
     "prisma:studio": "prisma studio",
-    "prisma:seed": "tsx prisma/seed.ts",
-    "production:setup": "chmod +x ./scripts/production-setup.sh && ./scripts/production-setup.sh",
-    "docker:build": "docker build -t kambel-app .",
-    "docker:run": "docker-compose up -d",
-    "docker:stop": "docker-compose down",
-    "docker:logs": "docker logs kambel-app",
-    "deploy": "npm run build && npm run prisma:migrate && npm start"
+    "prisma:seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
+    "@hookform/resolvers": "^3.9.0",
+    "@prisma/client": "^5.22.0",
+    "bcryptjs": "^2.4.3",
+    "clsx": "^2.1.0",
+    "date-fns": "^3.6.0",
+    "lucide-react": "^0.400.0",
     "next": "^14.2.0",
+    "next-auth": "^4.24.0",
     "react": "^18.3.0",
     "react-dom": "^18.3.0",
-    "@prisma/client": "^5.19.0",
-    "next-auth": "^4.24.0",
-    "bcryptjs": "^2.4.3",
-    "zod": "^3.23.0",
     "react-hook-form": "^7.52.0",
-    "@hookform/resolvers": "^3.9.0",
     "react-hot-toast": "^2.4.1",
-    "date-fns": "^3.6.0",
     "sharp": "^0.33.0",
-    "lucide-react": "^0.400.0",
-    "clsx": "^2.1.0",
-    "tailwind-merge": "^2.4.0"
+    "tailwind-merge": "^2.4.0",
+    "zod": "^3.23.0"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20.14.0",
     "@types/react": "^18.3.0",
     "@types/react-dom": "^18.3.0",
-    "@types/bcryptjs": "^2.4.6",
-    "typescript": "^5.5.0",
-    "tailwindcss": "^3.4.0",
-    "postcss": "^8.4.0",
     "autoprefixer": "^10.4.0",
-    "prisma": "^5.19.0",
-    "tsx": "^4.16.0",
     "eslint": "^8.57.0",
-    "eslint-config-next": "^14.2.0"
+    "eslint-config-next": "^14.2.0",
+    "postcss": "^8.4.0",
+    "prisma": "^5.19.0",
+    "tailwindcss": "^3.4.0",
+    "tsx": "^4.16.0",
+    "typescript": "^5.5.0"
   }
 }
-

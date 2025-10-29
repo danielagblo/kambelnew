@@ -420,7 +420,7 @@ export default function AdminAboutPage() {
         fetchAchievements();
         setShowAddAchievement(false);
         setEditingAchievementId(null);
-        setAchievementForm({ title: '', year: '', description: '' });
+        setAchievementForm({ title: '', year: '', description: '', category: '' });
       } else {
         toast.error('Failed to save achievement');
       }

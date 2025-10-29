@@ -7,37 +7,28 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { prisma } from '@/lib/prisma';
 
-// Force dynamic rendering - don't pre-render at build time
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
-
 async function getAboutData() {
-  try {
-    return await prisma.aboutConfig.findFirst({
-      where: { isActive: true },
-      include: {
-        journeyItems: {
-          where: { isActive: true },
-          orderBy: { order: 'asc' },
-        },
-        educationItems: {
-          where: { isActive: true },
-          orderBy: { order: 'asc' },
-        },
-        achievements: {
-          where: { isActive: true },
-          orderBy: { order: 'asc' },
-        },
-        speakingEngagements: {
-          where: { isActive: true },
-          orderBy: { order: 'asc' },
-        },
+  return await prisma.aboutConfig.findFirst({
+    where: { isActive: true },
+    include: {
+      journeyItems: {
+        where: { isActive: true },
+        orderBy: { order: 'asc' },
       },
-    });
-  } catch (error) {
-    console.error('Error fetching about data:', error);
-    return null;
-  }
+      educationItems: {
+        where: { isActive: true },
+        orderBy: { order: 'asc' },
+      },
+      achievements: {
+        where: { isActive: true },
+        orderBy: { order: 'asc' },
+      },
+      speakingEngagements: {
+        where: { isActive: true },
+        orderBy: { order: 'asc' },
+      },
+    },
+  });
 }
 
 export default async function AboutPage() {
