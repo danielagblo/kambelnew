@@ -8,35 +8,45 @@ import Image from 'next/image';
 import { prisma } from '@/lib/prisma';
 import { unstable_noStore as noStore } from 'next/cache';
 
+// Force dynamic rendering - don't pre-render at build time
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 async function getHomeData() {
   noStore();
   
-  const [hero, services, publications, blogPosts, masterclasses] = await Promise.all([
-    prisma.heroConfig.findFirst({ where: { isActive: true } }),
-    prisma.consultancyService.findMany({
-      where: { isActive: true },
-      orderBy: { order: 'asc' },
-      take: 4,
-    }),
-    prisma.book.findMany({
-      where: { isActive: true },
-      orderBy: { createdAt: 'desc' },
-      take: 3,
-      include: { category: true },
-    }),
-    prisma.blogPost.findMany({
-      where: { isPublished: true },
-      orderBy: { createdAt: 'desc' },
-      take: 3,
-    }),
-    prisma.masterclass.findMany({
-      where: { isActive: true, isUpcoming: true },
-      orderBy: { date: 'asc' },
-      take: 2,
-    }),
-  ]);
+  try {
+    const [hero, services, publications, blogPosts, masterclasses] = await Promise.all([
+      prisma.heroConfig.findFirst({ where: { isActive: true } }),
+      prisma.consultancyService.findMany({
+        where: { isActive: true },
+        orderBy: { order: 'asc' },
+        take: 4,
+      }),
+      prisma.book.findMany({
+        where: { isActive: true },
+        orderBy: { createdAt: 'desc' },
+        take: 3,
+        include: { category: true },
+      }),
+      prisma.blogPost.findMany({
+        where: { isPublished: true },
+        orderBy: { createdAt: 'desc' },
+        take: 3,
+      }),
+      prisma.masterclass.findMany({
+        where: { isActive: true, isUpcoming: true },
+        orderBy: { date: 'asc' },
+        take: 2,
+      }),
+    ]);
 
-  return { hero, services, publications, blogPosts, masterclasses };
+    return { hero, services, publications, blogPosts, masterclasses };
+  } catch (error) {
+    console.error('Error fetching home data:', error);
+    // Return empty data if database is not available
+    return { hero: null, services: [], publications: [], blogPosts: [], masterclasses: [] };
+  }
 }
 
 export default async function HomePage() {

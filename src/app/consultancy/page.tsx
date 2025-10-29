@@ -7,17 +7,26 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { prisma } from '@/lib/prisma';
 
+// Force dynamic rendering - don't pre-render at build time
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 async function getConsultancyServices() {
-  return await prisma.consultancyService.findMany({
-    where: { isActive: true },
-    include: {
-      features: {
-        where: { isActive: true },
-        orderBy: { order: 'asc' },
+  try {
+    return await prisma.consultancyService.findMany({
+      where: { isActive: true },
+      include: {
+        features: {
+          where: { isActive: true },
+          orderBy: { order: 'asc' },
+        },
       },
-    },
-    orderBy: { order: 'asc' },
-  });
+      orderBy: { order: 'asc' },
+    });
+  } catch (error) {
+    console.error('Error fetching consultancy services:', error);
+    return [];
+  }
 }
 
 export default async function ConsultancyPage() {
