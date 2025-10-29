@@ -140,6 +140,8 @@ export default async function HomePage() {
                       alt={book.title}
                       fill
                       className="object-cover"
+                      unoptimized={book.coverImage.startsWith('/uploads/')}
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     />
                   )}
                 </div>
@@ -190,6 +192,8 @@ export default async function HomePage() {
                         alt={masterclass.title}
                         fill
                         className="object-cover"
+                        unoptimized={masterclass.coverImage.startsWith('/uploads/')}
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       />
                     </div>
                   )}
@@ -245,6 +249,8 @@ export default async function HomePage() {
                         alt={post.title}
                         fill
                         className="object-cover"
+                        unoptimized={post.coverImage.startsWith('/uploads/')}
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       />
                     </div>
                   )}

@@ -125,6 +125,8 @@ export default function PublicationsPage() {
                       alt={book.title}
                       fill
                       className="object-cover"
+                      unoptimized={book.coverImage.startsWith('/uploads/')}
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
                     />
                   ) : (
                     <div className="flex items-center justify-center h-full bg-gray-300">

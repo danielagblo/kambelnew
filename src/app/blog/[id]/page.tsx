@@ -93,6 +93,8 @@ export default function BlogPostPage({ params }: { params: { id: string } }) {
                 alt={post.title}
                 fill
                 className="object-cover"
+                unoptimized={post.coverImage.startsWith('/uploads/')}
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 60vw"
               />
             </div>
           )}

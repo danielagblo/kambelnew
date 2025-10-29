@@ -121,6 +121,8 @@ export default function GalleryPage() {
                       alt={item.title}
                       fill
                       className="object-cover group-hover:scale-110 transition-transform duration-300"
+                      unoptimized={item.image?.startsWith('/uploads/')}
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                     />
                   ) : item.mediaType === 'video' ? (
                     <>
