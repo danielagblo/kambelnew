@@ -10,13 +10,18 @@ Your deployment is failing because environment variables are not configured in D
 
 Add these to your DigitalOcean App Platform settings:
 
-### 1. **DATABASE_URL** (PostgreSQL Connection String)
+### 1. **DATABASE_URL** (PostgreSQL Connection String with SSL)
 ```
 postgresql://username:password@host:5432/database_name?sslmode=require
 ```
 
+⚠️ **CRITICAL SSL CONFIGURATION**:
+- **MUST include `?sslmode=require`** for DigitalOcean Managed PostgreSQL
+- Without SSL parameters, you'll get "no encryption" errors
+- Alternative format: `?ssl=true&sslmode=require`
+
 ⚠️ **IMPORTANT**: You CANNOT use SQLite (file:./dev.db) on DigitalOcean!
-You need a PostgreSQL database.
+You need a PostgreSQL database with SSL enabled.
 
 ### 2. **ADMIN_USERNAME**
 ```
@@ -49,6 +54,9 @@ Choose one of these options:
 4. Click **Create Database Cluster**
 5. Once created, go to **Connection Details**
 6. Copy the **Connection String** (looks like `postgresql://...`)
+7. **IMPORTANT**: Make sure your connection string includes `?sslmode=require`
+   - DigitalOcean Managed DB automatically provides SSL
+   - If missing, append `?sslmode=require` to the connection string
 
 ### **Option B: Free PostgreSQL (Perfect for Testing)**
 
@@ -57,7 +65,8 @@ Choose one of these options:
 2. Sign up with GitHub or Google
 3. Click **"Create Project"**
 4. Copy the **Connection String** from the dashboard
-5. Use this as your `DATABASE_URL`
+5. Connection string automatically includes `?sslmode=require`
+6. Use this as your `DATABASE_URL`
 
 **Alternatives:**
 - **Supabase**: https://supabase.com (Free tier)
