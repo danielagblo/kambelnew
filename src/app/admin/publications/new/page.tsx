@@ -38,13 +38,18 @@ export default function NewPublicationPage() {
 
   const fetchCategories = async () => {
     try {
-      const response = await fetch('/api/categories');
+      const response = await fetch('/api/categories?admin=true');
       if (response.ok) {
         const data = await response.json();
+        console.log('Categories loaded:', data.length);
         setCategories(data);
+      } else {
+        console.error('Failed to fetch categories, response:', response.status);
+        toast.error('Failed to load categories');
       }
     } catch (error) {
       console.error('Failed to fetch categories:', error);
+      toast.error('Failed to load categories');
     }
   };
 
