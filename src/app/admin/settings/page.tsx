@@ -107,42 +107,42 @@ export default function AdminSettingsPage() {
     setIsLoading(true);
 
     try {
-      // Save site config and hero config in parallel
-      const [siteRes, heroRes] = await Promise.all([
-        fetch('/api/site/config', {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(siteConfig),
-        }),
-        fetch('/api/site/hero', {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(heroConfig),
-        }),
-      ]);
-
+      // Save site config first
+      console.log('Saving site config:', siteConfig);
+      const siteRes = await fetch('/api/site/config', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(siteConfig),
+      });
+      
       const siteData = await siteRes.json();
-      const heroData = await heroRes.json();
-
-      let hasError = false;
-      let errorMessages: string[] = [];
-
+      console.log('Site config response:', siteRes.status, siteData);
+      
       if (!siteRes.ok) {
-        hasError = true;
-        errorMessages.push(siteData.error || 'Failed to update site settings');
+        toast.error(siteData.error || 'Failed to update site settings');
+        setIsLoading(false);
+        return;
       }
 
+      // Then save hero config
+      console.log('Saving hero config:', heroConfig);
+      const heroRes = await fetch('/api/site/hero', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(heroConfig),
+      });
+      
+      const heroData = await heroRes.json();
+      console.log('Hero config response:', heroRes.status, heroData);
+      
       if (!heroRes.ok) {
-        hasError = true;
-        errorMessages.push(heroData.error || 'Failed to update hero settings');
+        toast.error(heroData.error || 'Failed to update hero settings');
+        setIsLoading(false);
+        return;
       }
 
-      if (hasError) {
-        toast.error(errorMessages.join(', '));
-      } else {
-        toast.success('All settings saved successfully!');
-        fetchConfigs(); // Refresh the data
-      }
+      toast.success('All settings saved successfully!');
+      fetchConfigs(); // Refresh the data
     } catch (error) {
       console.error('Error saving settings:', error);
       toast.error('An error occurred while saving settings');
