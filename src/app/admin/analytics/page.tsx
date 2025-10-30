@@ -29,6 +29,12 @@ export default function AnalyticsPage() {
   useEffect(() => {
     fetchStats();
   }, [period]);
+  
+  // Refresh stats when period changes
+  const handleRefresh = () => {
+    setLoading(true);
+    fetchStats();
+  };
 
   const fetchStats = async () => {
     try {
@@ -106,15 +112,25 @@ export default function AnalyticsPage() {
             <h1 className="text-3xl font-bold text-gray-900">Analytics Dashboard</h1>
             <p className="text-gray-600 mt-2">Track your site performance and visitor statistics</p>
           </div>
-          <select
-            value={period}
-            onChange={(e) => setPeriod(parseInt(e.target.value))}
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-          >
-            <option value={7}>Last 7 days</option>
-            <option value={30}>Last 30 days</option>
-            <option value={90}>Last 90 days</option>
-          </select>
+          <div className="flex gap-4">
+            <select
+              value={period}
+              onChange={(e) => setPeriod(parseInt(e.target.value))}
+              className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+            >
+              <option value={7}>Last 7 days</option>
+              <option value={30}>Last 30 days</option>
+              <option value={90}>Last 90 days</option>
+            </select>
+            <button
+              onClick={handleRefresh}
+              disabled={loading}
+              className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <i className="fas fa-sync-alt mr-2" />
+              Refresh
+            </button>
+          </div>
         </div>
       </div>
 
