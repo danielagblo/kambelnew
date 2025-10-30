@@ -31,9 +31,27 @@ export async function PUT(request: NextRequest) {
     
     const config = await prisma.siteConfig.findFirst();
     
+    // Only include valid fields from the schema
+    const updateData = {
+      siteName: body.siteName,
+      tagline: body.tagline,
+      footerAbout: body.footerAbout,
+      privacyPolicy: body.privacyPolicy,
+      termsConditions: body.termsConditions,
+      contactEmail: body.contactEmail,
+      contactPhone: body.contactPhone,
+      address: body.address,
+      location: body.location,
+      facebookUrl: body.facebookUrl,
+      twitterUrl: body.twitterUrl,
+      linkedinUrl: body.linkedinUrl,
+      instagramUrl: body.instagramUrl,
+      youtubeUrl: body.youtubeUrl,
+    };
+    
     if (!config) {
       const newConfig = await prisma.siteConfig.create({
-        data: body,
+        data: updateData,
       });
       console.log('Created new site config:', newConfig);
       return NextResponse.json(newConfig);
@@ -41,7 +59,7 @@ export async function PUT(request: NextRequest) {
 
     const updated = await prisma.siteConfig.update({
       where: { id: config.id },
-      data: body,
+      data: updateData,
     });
 
     console.log('Updated site config:', updated);

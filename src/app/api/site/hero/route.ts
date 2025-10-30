@@ -30,9 +30,27 @@ export async function PUT(request: NextRequest) {
     
     const hero = await prisma.heroConfig.findFirst({ where: { isActive: true } });
     
+    // Only include valid fields from the schema
+    const updateData = {
+      heroTitle: body.heroTitle,
+      heroSubtitle: body.heroSubtitle,
+      profileName: body.profileName,
+      profileTitle: body.profileTitle,
+      profilePicture: body.profilePicture,
+      yearsExperience: body.yearsExperience,
+      yearsLabel: body.yearsLabel,
+      yearsDescription: body.yearsDescription,
+      clientsCount: body.clientsCount,
+      clientsLabel: body.clientsLabel,
+      clientsDescription: body.clientsDescription,
+      publicationsCount: body.publicationsCount,
+      publicationsLabel: body.publicationsLabel,
+      publicationsDescription: body.publicationsDescription,
+    };
+    
     if (!hero) {
       const newHero = await prisma.heroConfig.create({
-        data: body,
+        data: updateData,
       });
       console.log('Created new hero config:', newHero);
       return NextResponse.json(newHero);
@@ -40,14 +58,18 @@ export async function PUT(request: NextRequest) {
 
     const updated = await prisma.heroConfig.update({
       where: { id: hero.id },
-      data: body,
+      data: updateData,
     });
 
     console.log('Updated hero config:', updated);
     return NextResponse.json(updated);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error updating hero config:', error);
-    return NextResponse.json({ error: 'Failed to update hero config' }, { status: 500 });
+    console.error('Error details:', error.message);
+    return NextResponse.json({ 
+      error: 'Failed to update hero config',
+      details: error.message 
+    }, { status: 500 });
   }
 }
 
