@@ -17,6 +17,7 @@ function extractCloudinaryPublicId(url: string): string | null {
 export default function SmartImage(props: SmartImageProps) {
     const { src, unoptimized, alt, ...rest } = props as any;
     const [failed, setFailed] = useState(false);
+    const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
 
     // simple inline SVG placeholder as data URI to avoid adding files
     const placeholder = `data:image/svg+xml;utf8,${encodeURIComponent(`
@@ -40,6 +41,26 @@ export default function SmartImage(props: SmartImageProps) {
         const publicId = extractCloudinaryPublicId(srcStr);
         if (publicId) {
             // Pass through common props; next-cloudinary wraps Next/Image so supports similar props
+            // If cloud name is not configured for client-side usage, fall back to plain img
+            if (!cloudName) {
+                console.warn('CLOUDINARY_CLOUD_NAME not set — falling back to raw URL rendering for Cloudinary asset.');
+                const rawUrl = srcStr; // use the original Cloudinary URL
+                return failed ? (
+                    <Image {...(rest as any)} src={placeholder} alt={alt || ''} />
+                ) : (
+                    <Image
+                        {...(rest as any)}
+                        src={rawUrl}
+                        alt={alt || ''}
+                        unoptimized={false}
+                        onError={(e: any) => {
+                            console.error('Image failed to load (cloud fallback):', rawUrl, e);
+                            setFailed(true);
+                        }}
+                    />
+                );
+            }
+
             return failed ? (
                 <Image {...(rest as any)} src={placeholder} alt={alt || ''} />
             ) : (
@@ -55,6 +76,24 @@ export default function SmartImage(props: SmartImageProps) {
             );
         }
         // fallback: use CldImage with the full URL
+        if (!cloudName) {
+            console.warn('CLOUDINARY_CLOUD_NAME not set — falling back to raw URL rendering for Cloudinary asset.');
+            return failed ? (
+                <Image {...(rest as any)} src={placeholder} alt={alt || ''} />
+            ) : (
+                <Image
+                    {...(rest as any)}
+                    src={srcStr}
+                    alt={alt || ''}
+                    unoptimized={false}
+                    onError={(e: any) => {
+                        console.error('Image failed to load (cloud fallback):', srcStr, e);
+                        setFailed(true);
+                    }}
+                />
+            );
+        }
+
         return failed ? (
             <Image {...(rest as any)} src={placeholder} alt={alt || ''} />
         ) : (
