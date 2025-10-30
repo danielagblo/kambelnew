@@ -32,9 +32,16 @@ export default function AdminSettingsPage() {
     heroSubtitle: '',
     profileName: '',
     profileTitle: '',
+    profilePicture: '',
     yearsExperience: '',
+    yearsLabel: '',
+    yearsDescription: '',
     clientsCount: '',
+    clientsLabel: '',
+    clientsDescription: '',
     publicationsCount: '',
+    publicationsLabel: '',
+    publicationsDescription: '',
   });
 
   useEffect(() => {
@@ -70,7 +77,22 @@ export default function AdminSettingsPage() {
 
       if (heroRes.ok) {
         const heroData = await heroRes.json();
-        setHeroConfig(heroData);
+        setHeroConfig({
+          heroTitle: heroData.heroTitle || '',
+          heroSubtitle: heroData.heroSubtitle || '',
+          profileName: heroData.profileName || '',
+          profileTitle: heroData.profileTitle || '',
+          profilePicture: heroData.profilePicture || '',
+          yearsExperience: heroData.yearsExperience || '',
+          yearsLabel: heroData.yearsLabel || '',
+          yearsDescription: heroData.yearsDescription || '',
+          clientsCount: heroData.clientsCount || '',
+          clientsLabel: heroData.clientsLabel || '',
+          clientsDescription: heroData.clientsDescription || '',
+          publicationsCount: heroData.publicationsCount || '',
+          publicationsLabel: heroData.publicationsLabel || '',
+          publicationsDescription: heroData.publicationsDescription || '',
+        });
       }
     } catch (error) {
       toast.error('Failed to load settings');
