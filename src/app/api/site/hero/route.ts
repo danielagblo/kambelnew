@@ -58,9 +58,27 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json(newHero);
     }
 
+    // Get current values and merge with updates, keeping existing values for fields not in updateData
+    const mergedData = {
+      heroTitle: updateData.heroTitle !== undefined ? updateData.heroTitle : hero.heroTitle,
+      heroSubtitle: updateData.heroSubtitle !== undefined ? updateData.heroSubtitle : hero.heroSubtitle,
+      profileName: hero.profileName, // Keep existing
+      profileTitle: hero.profileTitle, // Keep existing
+      profilePicture: hero.profilePicture, // Keep existing
+      yearsExperience: updateData.yearsExperience !== undefined ? updateData.yearsExperience : hero.yearsExperience,
+      yearsLabel: updateData.yearsLabel !== undefined ? updateData.yearsLabel : hero.yearsLabel,
+      yearsDescription: hero.yearsDescription, // Keep existing
+      clientsCount: updateData.clientsCount !== undefined ? updateData.clientsCount : hero.clientsCount,
+      clientsLabel: updateData.clientsLabel !== undefined ? updateData.clientsLabel : hero.clientsLabel,
+      clientsDescription: hero.clientsDescription, // Keep existing
+      publicationsCount: updateData.publicationsCount !== undefined ? updateData.publicationsCount : hero.publicationsCount,
+      publicationsLabel: updateData.publicationsLabel !== undefined ? updateData.publicationsLabel : hero.publicationsLabel,
+      publicationsDescription: hero.publicationsDescription, // Keep existing
+    };
+    
     const updated = await prisma.heroConfig.update({
       where: { id: hero.id },
-      data: updateData,
+      data: mergedData,
     });
 
     console.log('Updated hero config:', updated);
