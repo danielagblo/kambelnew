@@ -36,9 +36,45 @@ export default function AnalyticsPage() {
       if (response.ok) {
         const data = await response.json();
         setStats(data);
+      } else {
+        console.error('Failed to fetch analytics:', response.status);
+        // Show default empty stats on error
+        setStats({
+          totalPageViews: 0,
+          periodPageViews: 0,
+          pageViewsByDay: [],
+          topPages: [],
+          viewsByContentType: [],
+          counts: {
+            blogPosts: 0,
+            publications: 0,
+            masterclasses: 0,
+            services: 0,
+            contacts: 0,
+            newsletters: 0,
+            registrations: 0,
+          },
+        });
       }
     } catch (error) {
       console.error('Error fetching analytics:', error);
+      // Show default empty stats on error
+      setStats({
+        totalPageViews: 0,
+        periodPageViews: 0,
+        pageViewsByDay: [],
+        topPages: [],
+        viewsByContentType: [],
+        counts: {
+          blogPosts: 0,
+          publications: 0,
+          masterclasses: 0,
+          services: 0,
+          contacts: 0,
+          newsletters: 0,
+          registrations: 0,
+        },
+      });
     } finally {
       setLoading(false);
     }
@@ -54,16 +90,6 @@ export default function AnalyticsPage() {
     );
   }
 
-  if (!stats) {
-    return (
-      <AdminLayout>
-        <div className="text-center py-20">
-          <i className="fas fa-chart-bar text-6xl text-gray-300 mb-4" />
-          <p className="text-xl text-gray-500">No analytics data available</p>
-        </div>
-      </AdminLayout>
-    );
-  }
 
   const contentTypeLabels: { [key: string]: string } = {
     blog: 'Blog Posts',
