@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { NextRequest, NextResponse } from 'next/server';
 
 // GET /api/site/hero
 export async function GET() {
@@ -43,19 +43,8 @@ export async function PUT(request: NextRequest) {
     };
     
     if (!hero) {
-      // Create new hero with defaults for required fields
-      const newHero = await prisma.heroConfig.create({
-        data: {
-          ...updateData,
-          profileName: 'Moses Agbesi Katamani',
-          profileTitle: 'Chief Executive Officer',
-          yearsDescription: 'Professional Development',
-          clientsDescription: 'Successfully Helped',
-          publicationsDescription: 'Authored Works',
-        },
-      });
-      console.log('Created new hero config:', newHero);
-      return NextResponse.json(newHero);
+      console.error('No existing hero config to update (PUT)');
+      return NextResponse.json({ error: 'No hero config exists to update' }, { status: 404 });
     }
 
     // Get current values and merge with updates, keeping existing values for fields not in updateData
@@ -90,6 +79,61 @@ export async function PUT(request: NextRequest) {
       error: 'Failed to update hero config',
       details: error.message 
     }, { status: 500 });
+  }
+}
+
+// POST fallback: some hosts block PUT; allow POST to update existing hero config only
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+    console.log('Received hero update via POST fallback:', body);
+
+    const hero = await prisma.heroConfig.findFirst({ where: { isActive: true } });
+
+    if (!hero) {
+      console.error('No existing hero config to update (POST)');
+      return NextResponse.json({ error: 'No hero config exists to update' }, { status: 404 });
+    }
+
+    const updateData = {
+      heroTitle: body.heroTitle,
+      heroSubtitle: body.heroSubtitle,
+      yearsExperience: body.yearsExperience,
+      yearsLabel: body.yearsLabel,
+      clientsCount: body.clientsCount,
+      clientsLabel: body.clientsLabel,
+      publicationsCount: body.publicationsCount,
+      publicationsLabel: body.publicationsLabel,
+    };
+
+    // Merge with existing values
+    const mergedData = {
+      heroTitle: updateData.heroTitle !== undefined ? updateData.heroTitle : hero.heroTitle,
+      heroSubtitle: updateData.heroSubtitle !== undefined ? updateData.heroSubtitle : hero.heroSubtitle,
+      profileName: hero.profileName,
+      profileTitle: hero.profileTitle,
+      profilePicture: hero.profilePicture,
+      yearsExperience: updateData.yearsExperience !== undefined ? updateData.yearsExperience : hero.yearsExperience,
+      yearsLabel: updateData.yearsLabel !== undefined ? updateData.yearsLabel : hero.yearsLabel,
+      yearsDescription: hero.yearsDescription,
+      clientsCount: updateData.clientsCount !== undefined ? updateData.clientsCount : hero.clientsCount,
+      clientsLabel: updateData.clientsLabel !== undefined ? updateData.clientsLabel : hero.clientsLabel,
+      clientsDescription: hero.clientsDescription,
+      publicationsCount: updateData.publicationsCount !== undefined ? updateData.publicationsCount : hero.publicationsCount,
+      publicationsLabel: updateData.publicationsLabel !== undefined ? updateData.publicationsLabel : hero.publicationsLabel,
+      publicationsDescription: hero.publicationsDescription,
+    };
+
+    const updated = await prisma.heroConfig.update({
+      where: { id: hero.id },
+      data: mergedData,
+    });
+
+    console.log('Updated hero config (POST):', updated);
+    return NextResponse.json(updated);
+  } catch (error: any) {
+    console.error('Error updating hero config (POST):', error);
+    return NextResponse.json({ error: 'Failed to update hero config', details: error?.message }, { status: 500 });
   }
 }
 
