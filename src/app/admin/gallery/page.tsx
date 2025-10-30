@@ -5,11 +5,16 @@ import { Card, CardBody } from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 
 async function getGalleryItems() {
-  return await prisma.galleryItem.findMany({
-    orderBy: {
-      order: 'asc',
-    },
-  });
+  try {
+    return await prisma.galleryItem.findMany({
+      orderBy: {
+        order: 'asc',
+      },
+    });
+  } catch (error) {
+    console.error('Error fetching gallery items:', error);
+    return [];
+  }
 }
 
 // Extract YouTube video ID from URL

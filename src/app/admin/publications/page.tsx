@@ -5,14 +5,19 @@ import { Card, CardBody, CardHeader } from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 
 async function getPublications() {
-  return await prisma.book.findMany({
-    include: {
-      category: true,
-    },
-    orderBy: {
-      createdAt: 'desc',
-    },
-  });
+  try {
+    return await prisma.book.findMany({
+      include: {
+        category: true,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+  } catch (error) {
+    console.error('Error fetching publications:', error);
+    return [];
+  }
 }
 
 export default async function AdminPublicationsPage() {

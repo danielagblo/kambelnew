@@ -3,30 +3,42 @@ import AdminLayout from '@/components/admin/AdminLayout';
 import { Card, CardBody, CardHeader } from '@/components/ui/Card';
 
 async function getDashboardStats() {
-  const [
-    totalPublications,
-    totalServices,
-    totalBlogPosts,
-    totalMasterclasses,
-    totalContacts,
-    totalNewsletters,
-  ] = await Promise.all([
-    prisma.book.count({ where: { isActive: true } }),
-    prisma.consultancyService.count({ where: { isActive: true } }),
-    prisma.blogPost.count({ where: { isPublished: true } }),
-    prisma.masterclass.count({ where: { isActive: true } }),
-    prisma.contactMessage.count(),
-    prisma.newsletterSubscription.count({ where: { isActive: true } }),
-  ]);
+  try {
+    const [
+      totalPublications,
+      totalServices,
+      totalBlogPosts,
+      totalMasterclasses,
+      totalContacts,
+      totalNewsletters,
+    ] = await Promise.all([
+      prisma.book.count({ where: { isActive: true } }),
+      prisma.consultancyService.count({ where: { isActive: true } }),
+      prisma.blogPost.count({ where: { isPublished: true } }),
+      prisma.masterclass.count({ where: { isActive: true } }),
+      prisma.contactMessage.count(),
+      prisma.newsletterSubscription.count({ where: { isActive: true } }),
+    ]);
 
-  return {
-    totalPublications,
-    totalServices,
-    totalBlogPosts,
-    totalMasterclasses,
-    totalContacts,
-    totalNewsletters,
-  };
+    return {
+      totalPublications,
+      totalServices,
+      totalBlogPosts,
+      totalMasterclasses,
+      totalContacts,
+      totalNewsletters,
+    };
+  } catch (error) {
+    console.error('Error fetching dashboard stats:', error);
+    return {
+      totalPublications: 0,
+      totalServices: 0,
+      totalBlogPosts: 0,
+      totalMasterclasses: 0,
+      totalContacts: 0,
+      totalNewsletters: 0,
+    };
+  }
 }
 
 export default async function AdminDashboardPage() {
