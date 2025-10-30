@@ -4,19 +4,26 @@ import Header from '@/components/layout/Header';
 import Button from '@/components/ui/Button';
 import SmartImage from '@/components/ui/SmartImage';
 import { prisma } from '@/lib/prisma';
+import { unstable_noStore as noStore } from 'next/cache';
 import Link from 'next/link';
 
 async function getConsultancyServices() {
-  return await prisma.consultancyService.findMany({
-    where: { isActive: true },
-    include: {
-      features: {
-        where: { isActive: true },
-        orderBy: { order: 'asc' },
+  noStore(); // Ensure fresh data
+  try {
+    return await prisma.consultancyService.findMany({
+      where: { isActive: true },
+      include: {
+        features: {
+          where: { isActive: true },
+          orderBy: { order: 'asc' },
+        },
       },
-    },
-    orderBy: { order: 'asc' },
-  });
+      orderBy: { order: 'asc' },
+    });
+  } catch (error) {
+    console.error('Error fetching consultancy services:', error);
+    return [];
+  }
 }
 
 export default async function ConsultancyPage() {
