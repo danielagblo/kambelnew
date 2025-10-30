@@ -103,8 +103,19 @@ export default function AdminSettingsPage() {
         body: JSON.stringify(siteConfig),
       });
       
-      const siteData = await siteRes.json();
-      console.log('Site config response:', siteRes.status, siteData);
+      const siteResponseText = await siteRes.text();
+      console.log('Site config response status:', siteRes.status);
+      console.log('Site config response text:', siteResponseText);
+      
+      let siteData;
+      try {
+        siteData = JSON.parse(siteResponseText);
+      } catch (parseError) {
+        console.error('Failed to parse site response as JSON:', parseError);
+        toast.error('Server returned an error. Please check the console.');
+        setIsLoading(false);
+        return;
+      }
       
       if (!siteRes.ok) {
         toast.error(siteData.error || 'Failed to update site settings');
@@ -120,8 +131,19 @@ export default function AdminSettingsPage() {
         body: JSON.stringify(heroConfig),
       });
       
-      const heroData = await heroRes.json();
-      console.log('Hero config response:', heroRes.status, heroData);
+      const heroResponseText = await heroRes.text();
+      console.log('Hero config response status:', heroRes.status);
+      console.log('Hero config response text:', heroResponseText);
+      
+      let heroData;
+      try {
+        heroData = JSON.parse(heroResponseText);
+      } catch (parseError) {
+        console.error('Failed to parse hero response as JSON:', parseError);
+        toast.error('Server returned an error. Please check the console.');
+        setIsLoading(false);
+        return;
+      }
       
       if (!heroRes.ok) {
         toast.error(heroData.error || 'Failed to update hero settings');
