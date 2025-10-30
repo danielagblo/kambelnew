@@ -17,7 +17,8 @@ function extractCloudinaryPublicId(url: string): string | null {
 export default function SmartImage(props: SmartImageProps) {
     const { src, unoptimized, alt, ...rest } = props as any;
     const [failed, setFailed] = useState(false);
-    const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
+    // Use NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME for client-side access with fallback
+    const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'dprm1pdxg';
 
     // simple inline SVG placeholder as data URI to avoid adding files
     const placeholder = `data:image/svg+xml;utf8,${encodeURIComponent(`
