@@ -34,18 +34,12 @@ export async function PUT(request: NextRequest) {
     const updateData = {
       heroTitle: body.heroTitle,
       heroSubtitle: body.heroSubtitle,
-      profileName: body.profileName,
-      profileTitle: body.profileTitle,
-      profilePicture: body.profilePicture,
       yearsExperience: body.yearsExperience,
       yearsLabel: body.yearsLabel,
-      yearsDescription: body.yearsDescription,
       clientsCount: body.clientsCount,
       clientsLabel: body.clientsLabel,
-      clientsDescription: body.clientsDescription,
       publicationsCount: body.publicationsCount,
       publicationsLabel: body.publicationsLabel,
-      publicationsDescription: body.publicationsDescription,
     };
     
     if (!hero) {
