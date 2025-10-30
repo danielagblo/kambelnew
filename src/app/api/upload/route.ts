@@ -1,5 +1,7 @@
 import { v2 as cloudinary } from 'cloudinary';
+import fs from 'fs';
 import { NextRequest, NextResponse } from 'next/server';
+import path from 'path';
 import { Readable } from 'stream';
 
 // Configure Cloudinary from environment. Prefer CLOUDINARY_URL, or individual vars.
@@ -41,35 +43,57 @@ export async function POST(request: NextRequest) {
 
     // Ensure Cloudinary configuration exists
     const cloudConfigured = !!(process.env.CLOUDINARY_URL || (process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET));
-    if (!cloudConfigured) {
-      return NextResponse.json({ error: 'Cloudinary not configured. Set CLOUDINARY_URL or CLOUDINARY_CLOUD_NAME/CLOUDINARY_API_KEY/CLOUDINARY_API_SECRET.' }, { status: 500 });
-    }
 
-    // Upload to Cloudinary using upload_stream
-    const uploadResult: any = await new Promise((resolve, reject) => {
-      const opts: Record<string, any> = { folder };
-      const stream = cloudinary.uploader.upload_stream(opts, (error, result) => {
-        if (error) return reject(error);
-        resolve(result);
+    if (cloudConfigured) {
+      // Upload to Cloudinary using upload_stream
+      const uploadResult: any = await new Promise((resolve, reject) => {
+        const opts: Record<string, any> = { folder };
+        const stream = cloudinary.uploader.upload_stream(opts, (error, result) => {
+          if (error) return reject(error);
+          resolve(result);
+        });
+
+        // Pipe buffer into the upload stream
+        const readable = Readable.from(buffer);
+        readable.pipe(stream);
       });
 
-      // Pipe buffer into the upload stream
-      const readable = Readable.from(buffer);
-      readable.pipe(stream);
-    });
+      // uploadResult contains fields like secure_url, url, public_id
+      const fileUrl = uploadResult.secure_url || uploadResult.url;
 
-    // uploadResult contains fields like secure_url, url, public_id
-    const fileUrl = uploadResult.secure_url || uploadResult.url;
+      console.log('Cloudinary upload result:', { folder, public_id: uploadResult.public_id, url: fileUrl });
 
-    console.log('Cloudinary upload result:', { folder, public_id: uploadResult.public_id, url: fileUrl });
+      return NextResponse.json({
+        message: 'File uploaded successfully',
+        filename: uploadResult.original_filename || uploadResult.public_id,
+        url: fileUrl,
+        public_id: uploadResult.public_id,
+        raw: uploadResult,
+      });
+    }
 
-    return NextResponse.json({
-      message: 'File uploaded successfully',
-      filename: uploadResult.original_filename || uploadResult.public_id,
-      url: fileUrl,
-      public_id: uploadResult.public_id,
-      raw: uploadResult,
-    });
+    // Fallback: save to local public/uploads folder so admin pages that expect /uploads/... continue to work
+    try {
+      const originalName = (file as any).name || `upload-${Date.now()}`;
+      const safeName = `${Date.now()}-${originalName.replace(/[^a-zA-Z0-9._-]/g, '-')}`;
+      const uploadsDir = path.join(process.cwd(), 'public', 'uploads', folder || 'general');
+      await fs.promises.mkdir(uploadsDir, { recursive: true });
+      const filePath = path.join(uploadsDir, safeName);
+      await fs.promises.writeFile(filePath, buffer);
+
+      const localUrl = `/uploads/${folder}/${safeName}`;
+      console.log('Saved uploaded file locally:', filePath, '->', localUrl);
+
+      return NextResponse.json({
+        message: 'File uploaded successfully (local)',
+        filename: safeName,
+        url: localUrl,
+        raw: { localPath: filePath },
+      });
+    } catch (err) {
+      console.error('Failed to save uploaded file locally:', err);
+      return NextResponse.json({ error: 'Failed to upload file' }, { status: 500 });
+    }
   } catch (error) {
     console.error('Error uploading file:', error);
     return NextResponse.json({ error: 'Failed to upload file' }, { status: 500 });
