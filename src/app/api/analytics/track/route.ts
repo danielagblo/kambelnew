@@ -5,9 +5,10 @@ import { prisma } from '@/lib/prisma';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
+    console.log('Received analytics tracking request:', body);
     
     // Log the page view
-    await prisma.pageView.create({
+    const pageView = await prisma.pageView.create({
       data: {
         path: body.path,
         title: body.title,
@@ -18,6 +19,8 @@ export async function POST(request: NextRequest) {
         contentId: body.contentId || null,
       },
     });
+    
+    console.log('Page view created successfully:', pageView.id);
 
     return NextResponse.json({ success: true }, { status: 201 });
   } catch (error) {

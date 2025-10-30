@@ -15,17 +15,27 @@ export default function PageTracker({ contentType, contentId }: PageTrackerProps
     // Track the page view
     const trackPageView = async () => {
       try {
-        await fetch('/api/analytics/track', {
+        const trackingData = {
+          path: pathname,
+          title: document.title,
+          referrer: document.referrer || null,
+          contentType,
+          contentId,
+        };
+        
+        console.log('Tracking page view:', trackingData);
+        
+        const response = await fetch('/api/analytics/track', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            path: pathname,
-            title: document.title,
-            referrer: document.referrer || null,
-            contentType,
-            contentId,
-          }),
+          body: JSON.stringify(trackingData),
         });
+        
+        if (response.ok) {
+          console.log('Page view tracked successfully');
+        } else {
+          console.error('Failed to track page view:', response.status);
+        }
       } catch (error) {
         // Silently fail - don't interrupt user experience
         console.error('Analytics tracking error:', error);
