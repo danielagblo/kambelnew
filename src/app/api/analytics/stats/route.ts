@@ -20,12 +20,12 @@ export async function GET(request: NextRequest) {
     const periodPageViewsP = prisma.pageView.count({ where: { viewedAt: { gte: startDate } } });
     const pageViewsByDayP = prisma.$queryRaw<Array<{ date: string; views: number }>>`
       SELECT
-        DATE(viewed_at) as date,
+        DATE(viewedAt) as date,
         COUNT(*) as views
       FROM page_views
-      WHERE viewed_at >= ${startDate.toISOString()}
-      GROUP BY DATE(viewed_at)
-      ORDER BY DATE(viewed_at) ASC
+      WHERE viewedAt >= ${startDate.toISOString()}
+      GROUP BY DATE(viewedAt)
+      ORDER BY DATE(viewedAt) ASC
     `;
     const topPagesP = prisma.pageView.groupBy({
       by: ['path', 'title'],
