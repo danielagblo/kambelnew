@@ -29,6 +29,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     { icon: 'fa-chart-bar', label: 'Analytics', href: '/admin/analytics' },
     { icon: 'fa-user', label: 'About', href: '/admin/about' },
     { icon: 'fa-book', label: 'Publications', href: '/admin/publications' },
+    { icon: 'fa-tags', label: 'Categories', href: '/admin/categories' },
     { icon: 'fa-briefcase', label: 'Services', href: '/admin/services' },
     { icon: 'fa-blog', label: 'Blog', href: '/admin/blog' },
     { icon: 'fa-chalkboard-teacher', label: 'Masterclasses', href: '/admin/masterclasses' },
