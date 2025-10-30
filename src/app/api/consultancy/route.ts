@@ -9,16 +9,21 @@ export async function GET(request: NextRequest) {
     const id = searchParams.get('id');
     
     if (id) {
-      // Get all services for admin (including inactive)
-      const services = await prisma.consultancyService.findMany({
+      // Get single service by ID (for admin editing)
+      const service = await prisma.consultancyService.findUnique({
+        where: { id },
         include: {
           features: {
             orderBy: { order: 'asc' },
           },
         },
-        orderBy: { order: 'asc' },
       });
-      return NextResponse.json(services);
+      
+      if (!service) {
+        return NextResponse.json({ error: 'Service not found' }, { status: 404 });
+      }
+      
+      return NextResponse.json(service);
     }
 
     // Get active services for public

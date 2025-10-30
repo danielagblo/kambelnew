@@ -28,12 +28,17 @@ export default function EditBlogPostPage() {
       const response = await fetch(`/api/blog?id=${params.id}`);
       if (response.ok) {
         const data = await response.json();
-        const post = data.find((p: any) => p.id === params.id);
-        if (post) {
-          setFormData(post);
+        if (data.id) {
+          setFormData(data);
+        } else {
+          toast.error('Blog post not found');
         }
+      } else {
+        const errorData = await response.json().catch(() => ({ error: 'Failed to load blog post' }));
+        toast.error(errorData.error || 'Failed to load blog post');
       }
     } catch (error) {
+      console.error('Error fetching blog post:', error);
       toast.error('Failed to load blog post');
     } finally {
       setLoading(false);

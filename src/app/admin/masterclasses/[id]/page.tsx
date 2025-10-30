@@ -39,15 +39,20 @@ export default function EditMasterclassPage() {
       const response = await fetch(`/api/masterclasses?id=${params.id}`);
       if (response.ok) {
         const data = await response.json();
-        const mc = data.find((m: any) => m.id === params.id);
-        if (mc) {
+        if (data.id) {
           // Format date for datetime-local input
-          const date = new Date(mc.date);
+          const date = new Date(data.date);
           const formattedDate = date.toISOString().slice(0, 16);
-          setFormData({ ...mc, date: formattedDate });
+          setFormData({ ...data, date: formattedDate });
+        } else {
+          toast.error('Masterclass not found');
         }
+      } else {
+        const errorData = await response.json().catch(() => ({ error: 'Failed to load masterclass' }));
+        toast.error(errorData.error || 'Failed to load masterclass');
       }
     } catch (error) {
+      console.error('Error fetching masterclass:', error);
       toast.error('Failed to load masterclass');
     } finally {
       setLoading(false);

@@ -9,11 +9,16 @@ export async function GET(request: NextRequest) {
     const id = searchParams.get('id');
     
     if (id) {
-      // Get all gallery items for admin (including inactive)
-      const items = await prisma.galleryItem.findMany({
-        orderBy: [{ order: 'asc' }, { createdAt: 'desc' }],
+      // Get single gallery item by ID (for admin editing)
+      const item = await prisma.galleryItem.findUnique({
+        where: { id },
       });
-      return NextResponse.json(items);
+      
+      if (!item) {
+        return NextResponse.json({ error: 'Gallery item not found' }, { status: 404 });
+      }
+      
+      return NextResponse.json(item);
     }
 
     // Get active gallery items for public

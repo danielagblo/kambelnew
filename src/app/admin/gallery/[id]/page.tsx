@@ -34,15 +34,20 @@ export default function EditGalleryItemPage() {
 
   const fetchGalleryItem = async () => {
     try {
-      const response = await fetch(`/api/gallery`);
+      const response = await fetch(`/api/gallery?id=${params.id}`);
       if (response.ok) {
         const data = await response.json();
-        const item = data.find((i: any) => i.id === params.id);
-        if (item) {
-          setFormData(item);
+        if (data.id) {
+          setFormData(data);
+        } else {
+          toast.error('Gallery item not found');
         }
+      } else {
+        const errorData = await response.json().catch(() => ({ error: 'Failed to load gallery item' }));
+        toast.error(errorData.error || 'Failed to load gallery item');
       }
     } catch (error) {
+      console.error('Error fetching gallery item:', error);
       toast.error('Failed to load gallery item');
     } finally {
       setLoading(false);
