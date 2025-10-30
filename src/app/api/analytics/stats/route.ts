@@ -6,26 +6,19 @@ import { NextRequest, NextResponse } from 'next/server';
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const days = parseInt(searchParams.get('days') || '30');
+    let days = parseInt(searchParams.get('days') || '30', 10);
+    if (!Number.isFinite(days) || days <= 0) days = 30;
+    // clamp days to avoid very large queries
+    days = Math.min(Math.max(days, 1), 365);
 
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - days);
 
-    // Get total page views
-    const totalPageViews = await prisma.pageView.count();
-
-    // Get page views in the period
-    const periodPageViews = await prisma.pageView.count({
-      where: {
-        viewedAt: {
-          gte: startDate,
-        },
-      },
-    });
-
-    // Get page views by day (last 30 days)
-    // Raw SQL must use the actual database column names (snake_case). Prisma model uses camelCase.
-    const pageViewsByDay = await prisma.$queryRaw<Array<{ date: string; views: number }>>`
+    // Run independent DB queries in parallel and tolerate partial failures so
+    // one failing query doesn't make the whole endpoint return 500.
+    const totalPageViewsP = prisma.pageView.count();
+    const periodPageViewsP = prisma.pageView.count({ where: { viewedAt: { gte: startDate } } });
+    const pageViewsByDayP = prisma.$queryRaw<Array<{ date: string; views: number }>>`
       SELECT
         DATE(viewed_at) as date,
         COUNT(*) as views
@@ -34,55 +27,78 @@ export async function GET(request: NextRequest) {
       GROUP BY DATE(viewed_at)
       ORDER BY DATE(viewed_at) ASC
     `;
-
-    // Get top pages
-    const topPages = await prisma.pageView.groupBy({
+    const topPagesP = prisma.pageView.groupBy({
       by: ['path', 'title'],
-      _count: {
-        id: true,
-      },
-      orderBy: {
-        _count: {
-          id: 'desc',
-        },
-      },
+      _count: { id: true },
+      orderBy: { _count: { id: 'desc' } },
       take: 10,
-      where: {
-        viewedAt: {
-          gte: startDate,
-        },
-      },
+      where: { viewedAt: { gte: startDate } },
     });
-
-    // Get views by content type
-    const viewsByContentType = await prisma.pageView.groupBy({
+    const viewsByContentTypeP = prisma.pageView.groupBy({
       by: ['contentType'],
-      _count: {
-        id: true,
-      },
-      where: {
-        contentType: {
-          not: null,
-        },
-        viewedAt: {
-          gte: startDate,
-        },
-      },
-      orderBy: {
-        _count: {
-          id: 'desc',
-        },
-      },
+      _count: { id: true },
+      where: { contentType: { not: null }, viewedAt: { gte: startDate } },
+      orderBy: { _count: { id: 'desc' } },
     });
 
-    // Get general counts
-    const blogPostsCount = await prisma.blogPost.count({ where: { isPublished: true } });
-    const publicationsCount = await prisma.book.count({ where: { isActive: true } });
-    const masterclassesCount = await prisma.masterclass.count({ where: { isActive: true } });
-    const servicesCount = await prisma.consultancyService.count({ where: { isActive: true } });
-    const contactsCount = await prisma.contactMessage.count();
-    const newsletterCount = await prisma.newsletterSubscription.count({ where: { isActive: true } });
-    const registrationsCount = await prisma.masterclassRegistration.count();
+    const blogPostsCountP = prisma.blogPost.count({ where: { isPublished: true } });
+    const publicationsCountP = prisma.book.count({ where: { isActive: true } });
+    const masterclassesCountP = prisma.masterclass.count({ where: { isActive: true } });
+    const servicesCountP = prisma.consultancyService.count({ where: { isActive: true } });
+    const contactsCountP = prisma.contactMessage.count();
+    const newsletterCountP = prisma.newsletterSubscription.count({ where: { isActive: true } });
+    const registrationsCountP = prisma.masterclassRegistration.count();
+
+    const results = await Promise.allSettled([
+      totalPageViewsP,
+      periodPageViewsP,
+      pageViewsByDayP,
+      topPagesP,
+      viewsByContentTypeP,
+      blogPostsCountP,
+      publicationsCountP,
+      masterclassesCountP,
+      servicesCountP,
+      contactsCountP,
+      newsletterCountP,
+      registrationsCountP,
+    ]);
+
+    // Map settled results into values or sensible defaults
+    const [
+      totalPageViewsR,
+      periodPageViewsR,
+      pageViewsByDayR,
+      topPagesR,
+      viewsByContentTypeR,
+      blogPostsCountR,
+      publicationsCountR,
+      masterclassesCountR,
+      servicesCountR,
+      contactsCountR,
+      newsletterCountR,
+      registrationsCountR,
+    ] = results;
+
+    function settledValue<T>(r: PromiseSettledResult<T>, fallback: T): T {
+      if (r.status === 'fulfilled') return r.value as T;
+      console.error('Analytics query failed (falling back):', (r as any).reason || r);
+      return fallback;
+    }
+
+    const totalPageViews = settledValue<number>(totalPageViewsR as any, 0);
+    const periodPageViews = settledValue<number>(periodPageViewsR as any, 0);
+    const pageViewsByDay = settledValue<Array<{ date: string; views: number }>>(pageViewsByDayR as any, []);
+    const topPages = settledValue<any[]>(topPagesR as any, []);
+    const viewsByContentType = settledValue<any[]>(viewsByContentTypeR as any, []);
+
+    const blogPostsCount = settledValue<number>(blogPostsCountR as any, 0);
+    const publicationsCount = settledValue<number>(publicationsCountR as any, 0);
+    const masterclassesCount = settledValue<number>(masterclassesCountR as any, 0);
+    const servicesCount = settledValue<number>(servicesCountR as any, 0);
+    const contactsCount = settledValue<number>(contactsCountR as any, 0);
+    const newsletterCount = settledValue<number>(newsletterCountR as any, 0);
+    const registrationsCount = settledValue<number>(registrationsCountR as any, 0);
 
     return NextResponse.json({
       totalPageViews,
@@ -91,11 +107,11 @@ export async function GET(request: NextRequest) {
       topPages: topPages.map(page => ({
         path: page.path,
         title: page.title || page.path,
-        views: page._count.id,
+        views: page._count?.id || 0,
       })),
       viewsByContentType: viewsByContentType.map(item => ({
         type: item.contentType,
-        views: item._count.id,
+        views: item._count?.id || 0,
       })),
       counts: {
         blogPosts: blogPostsCount,
