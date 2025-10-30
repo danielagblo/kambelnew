@@ -30,18 +30,12 @@ export default function AdminSettingsPage() {
   const [heroConfig, setHeroConfig] = useState({
     heroTitle: '',
     heroSubtitle: '',
-    profileName: '',
-    profileTitle: '',
-    profilePicture: '',
     yearsExperience: '',
     yearsLabel: '',
-    yearsDescription: '',
     clientsCount: '',
     clientsLabel: '',
-    clientsDescription: '',
     publicationsCount: '',
     publicationsLabel: '',
-    publicationsDescription: '',
   });
 
   useEffect(() => {
@@ -80,18 +74,12 @@ export default function AdminSettingsPage() {
         setHeroConfig({
           heroTitle: heroData.heroTitle || '',
           heroSubtitle: heroData.heroSubtitle || '',
-          profileName: heroData.profileName || '',
-          profileTitle: heroData.profileTitle || '',
-          profilePicture: heroData.profilePicture || '',
           yearsExperience: heroData.yearsExperience || '',
           yearsLabel: heroData.yearsLabel || '',
-          yearsDescription: heroData.yearsDescription || '',
           clientsCount: heroData.clientsCount || '',
           clientsLabel: heroData.clientsLabel || '',
-          clientsDescription: heroData.clientsDescription || '',
           publicationsCount: heroData.publicationsCount || '',
           publicationsLabel: heroData.publicationsLabel || '',
-          publicationsDescription: heroData.publicationsDescription || '',
         });
       }
     } catch (error) {
@@ -346,46 +334,57 @@ export default function AdminSettingsPage() {
                 rows={3}
               />
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <Input
-                  label="Profile Name"
-                  name="profileName"
-                  value={heroConfig.profileName}
-                  onChange={handleHeroChange}
-                />
-
-                <Input
-                  label="Profile Title"
-                  name="profileTitle"
-                  value={heroConfig.profileTitle}
-                  onChange={handleHeroChange}
-                />
-              </div>
-
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <Input
-                  label="Years Experience"
-                  name="yearsExperience"
-                  value={heroConfig.yearsExperience}
-                  onChange={handleHeroChange}
-                  placeholder="15+"
-                />
+                <div>
+                  <Input
+                    label="Years Experience"
+                    name="yearsExperience"
+                    value={heroConfig.yearsExperience}
+                    onChange={handleHeroChange}
+                    placeholder="15+"
+                  />
+                  <Input
+                    label="Years Label"
+                    name="yearsLabel"
+                    value={heroConfig.yearsLabel}
+                    onChange={handleHeroChange}
+                    placeholder="Years Experience"
+                  />
+                </div>
 
-                <Input
-                  label="Clients Count"
-                  name="clientsCount"
-                  value={heroConfig.clientsCount}
-                  onChange={handleHeroChange}
-                  placeholder="5000+"
-                />
+                <div>
+                  <Input
+                    label="Clients Count"
+                    name="clientsCount"
+                    value={heroConfig.clientsCount}
+                    onChange={handleHeroChange}
+                    placeholder="5000+"
+                  />
+                  <Input
+                    label="Clients Label"
+                    name="clientsLabel"
+                    value={heroConfig.clientsLabel}
+                    onChange={handleHeroChange}
+                    placeholder="Clients"
+                  />
+                </div>
 
-                <Input
-                  label="Publications Count"
-                  name="publicationsCount"
-                  value={heroConfig.publicationsCount}
-                  onChange={handleHeroChange}
-                  placeholder="50+"
-                />
+                <div>
+                  <Input
+                    label="Publications Count"
+                    name="publicationsCount"
+                    value={heroConfig.publicationsCount}
+                    onChange={handleHeroChange}
+                    placeholder="50+"
+                  />
+                  <Input
+                    label="Publications Label"
+                    name="publicationsLabel"
+                    value={heroConfig.publicationsLabel}
+                    onChange={handleHeroChange}
+                    placeholder="Publications"
+                  />
+                </div>
               </div>
 
             </div>
