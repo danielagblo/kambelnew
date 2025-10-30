@@ -8,12 +8,17 @@ export async function GET(request: NextRequest) {
     const id = searchParams.get('id');
 
     if (id) {
-      // Get single post by ID
+      // Get single post by ID (only published posts for public)
       const post = await prisma.blogPost.findUnique({
         where: { id },
       });
       
       if (!post) {
+        return NextResponse.json({ error: 'Blog post not found' }, { status: 404 });
+      }
+      
+      // For public access, only return published posts
+      if (!post.isPublished) {
         return NextResponse.json({ error: 'Blog post not found' }, { status: 404 });
       }
       
