@@ -80,7 +80,7 @@ export default function AnalyticsPage() {
     }
   };
 
-  if (loading) {
+  if (loading || !stats) {
     return (
       <AdminLayout>
         <div className="flex justify-center items-center h-64">
@@ -89,7 +89,6 @@ export default function AnalyticsPage() {
       </AdminLayout>
     );
   }
-
 
   const contentTypeLabels: { [key: string]: string } = {
     blog: 'Blog Posts',
