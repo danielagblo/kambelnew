@@ -1,11 +1,13 @@
 import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
+import { unstable_noStore as noStore } from 'next/cache';
 import AdminLayout from '@/components/admin/AdminLayout';
 import { Card, CardBody } from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import { format } from 'date-fns';
 
 async function getMasterclasses() {
+  noStore(); // Ensure this component always fetches fresh data
   try {
     return await prisma.masterclass.findMany({
       include: {

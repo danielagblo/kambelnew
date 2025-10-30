@@ -1,10 +1,12 @@
 import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
+import { unstable_noStore as noStore } from 'next/cache';
 import AdminLayout from '@/components/admin/AdminLayout';
 import { Card, CardBody } from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 
 async function getServices() {
+  noStore(); // Ensure this component always fetches fresh data
   try {
     return await prisma.consultancyService.findMany({
       include: {

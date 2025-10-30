@@ -1,8 +1,10 @@
 import { prisma } from '@/lib/prisma';
+import { unstable_noStore as noStore } from 'next/cache';
 import AdminLayout from '@/components/admin/AdminLayout';
 import { Card, CardBody, CardHeader } from '@/components/ui/Card';
 
 async function getDashboardStats() {
+  noStore(); // Ensure this component always fetches fresh data
   try {
     const [
       totalPublications,
