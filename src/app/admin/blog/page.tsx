@@ -8,11 +8,16 @@ import { format } from 'date-fns';
 
 async function getBlogPosts() {
   noStore(); // Ensure this component always fetches fresh data
-  return await prisma.blogPost.findMany({
-    orderBy: {
-      createdAt: 'desc',
-    },
-  });
+  try {
+    return await prisma.blogPost.findMany({
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+  } catch (error) {
+    console.error('Error fetching blog posts:', error);
+    return [];
+  }
 }
 
 export default async function AdminBlogPage() {

@@ -5,14 +5,21 @@ import Button from '@/components/ui/Button';
 import { Card, CardBody } from '@/components/ui/Card';
 import SmartImage from '@/components/ui/SmartImage';
 import { prisma } from '@/lib/prisma';
+import { unstable_noStore as noStore } from 'next/cache';
 import { formatDate } from '@/lib/utils';
 import Link from 'next/link';
 
 async function getBlogPosts() {
-  return await prisma.blogPost.findMany({
-    where: { isPublished: true },
-    orderBy: { createdAt: 'desc' },
-  });
+  noStore(); // Ensure fresh data for published posts
+  try {
+    return await prisma.blogPost.findMany({
+      where: { isPublished: true },
+      orderBy: { createdAt: 'desc' },
+    });
+  } catch (error) {
+    console.error('Error fetching blog posts:', error);
+    return [];
+  }
 }
 
 export default async function BlogPage() {

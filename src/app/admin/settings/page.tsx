@@ -30,11 +30,12 @@ export default function AdminSettingsPage() {
   const [heroConfig, setHeroConfig] = useState({
     heroTitle: '',
     heroSubtitle: '',
-    profileName: '',
-    profileTitle: '',
     yearsExperience: '',
+    yearsLabel: '',
     clientsCount: '',
+    clientsLabel: '',
     publicationsCount: '',
+    publicationsLabel: '',
   });
 
   useEffect(() => {
@@ -70,7 +71,16 @@ export default function AdminSettingsPage() {
 
       if (heroRes.ok) {
         const heroData = await heroRes.json();
-        setHeroConfig(heroData);
+        setHeroConfig({
+          heroTitle: heroData.heroTitle || '',
+          heroSubtitle: heroData.heroSubtitle || '',
+          yearsExperience: heroData.yearsExperience || '',
+          yearsLabel: heroData.yearsLabel || '',
+          clientsCount: heroData.clientsCount || '',
+          clientsLabel: heroData.clientsLabel || '',
+          publicationsCount: heroData.publicationsCount || '',
+          publicationsLabel: heroData.publicationsLabel || '',
+        });
       }
     } catch (error) {
       toast.error('Failed to load settings');
@@ -79,69 +89,75 @@ export default function AdminSettingsPage() {
     }
   };
 
-  const handleSiteSubmit = async () => {
+  const handleSaveAll = async () => {
     if (isLoading) return;
-    
-    console.log('Site submit clicked!');
-    console.log('Site config data:', siteConfig);
     
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/site/config', {
+      // Save site config first
+      console.log('Saving site config:', siteConfig);
+      const siteRes = await fetch('/api/site/config', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(siteConfig),
       });
-
-      console.log('Response status:', response.status);
-      const data = await response.json();
-      console.log('Response data:', data);
-
-      if (response.ok) {
-        toast.success('Site settings updated!');
-        fetchConfigs(); // Refresh the data
-      } else {
-        const errorMsg = data.details ? `${data.error}: ${data.details}` : (data.error || 'Failed to update site settings');
-        console.error('Update failed:', errorMsg);
-        toast.error(errorMsg);
+      
+      const siteResponseText = await siteRes.text();
+      console.log('Site config response status:', siteRes.status);
+      console.log('Site config response text:', siteResponseText);
+      
+      let siteData;
+      try {
+        siteData = JSON.parse(siteResponseText);
+      } catch (parseError) {
+        console.error('Failed to parse site response as JSON:', parseError);
+        toast.error('Server returned an error. Please check the console.');
+        setIsLoading(false);
+        return;
       }
-    } catch (error) {
-      console.error('Error:', error);
-      toast.error('An error occurred');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+      
+      if (!siteRes.ok) {
+        toast.error(siteData.error || 'Failed to update site settings');
+        setIsLoading(false);
+        return;
+      }
 
-  const handleHeroSubmit = async () => {
-    if (isLoading) return;
-    
-    console.log('Hero submit clicked!');
-    console.log('Hero config data:', heroConfig);
-    
-    setIsLoading(true);
-
-    try {
-      const response = await fetch('/api/site/hero', {
+      // Then save hero config
+      console.log('Saving hero config:', heroConfig);
+      const heroRes = await fetch('/api/site/hero', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(heroConfig),
       });
-
-      console.log('Response status:', response.status);
-      const data = await response.json();
-      console.log('Response data:', data);
-
-      if (response.ok) {
-        toast.success('Hero settings updated!');
-        fetchConfigs(); // Refresh the data
-      } else {
-        toast.error(data.error || 'Failed to update hero settings');
+      
+      const heroResponseText = await heroRes.text();
+      console.log('Hero config response status:', heroRes.status);
+      console.log('Hero config response text:', heroResponseText);
+      
+      let heroData;
+      try {
+        heroData = JSON.parse(heroResponseText);
+      } catch (parseError) {
+        console.error('Failed to parse hero response as JSON:', parseError);
+        toast.error('Server returned an error. Please check the console.');
+        setIsLoading(false);
+        return;
       }
+      
+      if (!heroRes.ok) {
+        toast.error(heroData.error || 'Failed to update hero settings');
+        setIsLoading(false);
+        return;
+      }
+
+      toast.success('All settings saved successfully!');
+      fetchConfigs(); // Refresh the data
     } catch (error) {
-      console.error('Error:', error);
-      toast.error('An error occurred');
+      console.error('Error saving settings:', error);
+      const errorMessage = error instanceof Error ? error.message : 'An error occurred while saving settings';
+      console.error('Full error:', errorMessage);
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -287,78 +303,40 @@ export default function AdminSettingsPage() {
                   />
                 </div>
               </div>
+            </div>
+          </CardBody>
+        </Card>
 
-              <button
-                type="button"
-                disabled={isLoading}
-                onClick={handleSiteSubmit}
-                className="inline-flex items-center justify-center px-6 py-3 text-base font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isLoading ? (
-                  <>
-                    <i className="fas fa-spinner fa-spin mr-2" />
-                    Updating...
-                  </>
-                ) : (
-                  <>
-                    <i className="fas fa-save mr-2" />
-                    Update Site Settings
-                  </>
-                )}
-                  </button>
-                </div>
-              </CardBody>
-            </Card>
+        {/* Legal Pages */}
+        <Card>
+          <CardHeader>
+            <h2 className="text-xl font-semibold">Legal Pages</h2>
+          </CardHeader>
+          <CardBody>
+            <div className="space-y-6">
+              <Textarea
+                label="Privacy Policy"
+                name="privacyPolicy"
+                value={siteConfig.privacyPolicy}
+                onChange={handleSiteChange}
+                rows={10}
+                placeholder="Enter your privacy policy content here. You can use line breaks for paragraphs."
+              />
 
-            {/* Legal Pages */}
-            <Card>
-              <CardHeader>
-                <h2 className="text-xl font-semibold">Legal Pages</h2>
-              </CardHeader>
-              <CardBody>
-                <div className="space-y-6">
-                  <Textarea
-                    label="Privacy Policy"
-                    name="privacyPolicy"
-                    value={siteConfig.privacyPolicy}
-                    onChange={handleSiteChange}
-                    rows={10}
-                    placeholder="Enter your privacy policy content here. You can use line breaks for paragraphs."
-                  />
+              <Textarea
+                label="Terms & Conditions"
+                name="termsConditions"
+                value={siteConfig.termsConditions}
+                onChange={handleSiteChange}
+                rows={10}
+                placeholder="Enter your terms & conditions content here. You can use line breaks for paragraphs."
+              />
+            </div>
+          </CardBody>
+        </Card>
 
-                  <Textarea
-                    label="Terms & Conditions"
-                    name="termsConditions"
-                    value={siteConfig.termsConditions}
-                    onChange={handleSiteChange}
-                    rows={10}
-                    placeholder="Enter your terms & conditions content here. You can use line breaks for paragraphs."
-                  />
-
-                  <button
-                    type="button"
-                    disabled={isLoading}
-                    onClick={handleSiteSubmit}
-                    className="inline-flex items-center justify-center px-6 py-3 text-base font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {isLoading ? (
-                      <>
-                        <i className="fas fa-spinner fa-spin mr-2" />
-                        Updating...
-                      </>
-                    ) : (
-                      <>
-                        <i className="fas fa-save mr-2" />
-                        Update Legal Pages
-                      </>
-                    )}
-                  </button>
-                </div>
-              </CardBody>
-            </Card>
-
-            {/* Hero Configuration */}
-            <Card>
+        {/* Hero Configuration */}
+        <Card>
           <CardHeader>
             <h2 className="text-xl font-semibold">Hero Section</h2>
           </CardHeader>
@@ -380,69 +358,84 @@ export default function AdminSettingsPage() {
                 rows={3}
               />
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <Input
-                  label="Profile Name"
-                  name="profileName"
-                  value={heroConfig.profileName}
-                  onChange={handleHeroChange}
-                />
-
-                <Input
-                  label="Profile Title"
-                  name="profileTitle"
-                  value={heroConfig.profileTitle}
-                  onChange={handleHeroChange}
-                />
-              </div>
-
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <Input
-                  label="Years Experience"
-                  name="yearsExperience"
-                  value={heroConfig.yearsExperience}
-                  onChange={handleHeroChange}
-                  placeholder="15+"
-                />
+                <div>
+                  <Input
+                    label="Years Experience"
+                    name="yearsExperience"
+                    value={heroConfig.yearsExperience}
+                    onChange={handleHeroChange}
+                    placeholder="15+"
+                  />
+                  <Input
+                    label="Years Label"
+                    name="yearsLabel"
+                    value={heroConfig.yearsLabel}
+                    onChange={handleHeroChange}
+                    placeholder="Years Experience"
+                  />
+                </div>
 
-                <Input
-                  label="Clients Count"
-                  name="clientsCount"
-                  value={heroConfig.clientsCount}
-                  onChange={handleHeroChange}
-                  placeholder="5000+"
-                />
+                <div>
+                  <Input
+                    label="Clients Count"
+                    name="clientsCount"
+                    value={heroConfig.clientsCount}
+                    onChange={handleHeroChange}
+                    placeholder="5000+"
+                  />
+                  <Input
+                    label="Clients Label"
+                    name="clientsLabel"
+                    value={heroConfig.clientsLabel}
+                    onChange={handleHeroChange}
+                    placeholder="Clients"
+                  />
+                </div>
 
-                <Input
-                  label="Publications Count"
-                  name="publicationsCount"
-                  value={heroConfig.publicationsCount}
-                  onChange={handleHeroChange}
-                  placeholder="50+"
-                />
+                <div>
+                  <Input
+                    label="Publications Count"
+                    name="publicationsCount"
+                    value={heroConfig.publicationsCount}
+                    onChange={handleHeroChange}
+                    placeholder="50+"
+                  />
+                  <Input
+                    label="Publications Label"
+                    name="publicationsLabel"
+                    value={heroConfig.publicationsLabel}
+                    onChange={handleHeroChange}
+                    placeholder="Publications"
+                  />
+                </div>
               </div>
 
-              <button
-                type="button"
-                disabled={isLoading}
-                onClick={handleHeroSubmit}
-                className="inline-flex items-center justify-center px-6 py-3 text-base font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isLoading ? (
-                  <>
-                    <i className="fas fa-spinner fa-spin mr-2" />
-                    Updating...
-                  </>
-                ) : (
-                  <>
-                    <i className="fas fa-save mr-2" />
-                    Update Hero Settings
-                  </>
-                )}
-              </button>
             </div>
           </CardBody>
         </Card>
+
+        {/* Save All Button */}
+        <div className="sticky bottom-0 bg-white border-t border-gray-200 p-6 -mx-6 mt-6">
+          <button
+            type="button"
+            disabled={isLoading}
+            onClick={handleSaveAll}
+            className="w-full inline-flex items-center justify-center px-6 py-3 text-base font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isLoading ? (
+              <>
+                <i className="fas fa-spinner fa-spin mr-2" />
+                Saving...
+              </>
+            ) : (
+              <>
+                <i className="fas fa-save mr-2" />
+                Save All Settings
+              </>
+            )}
+          </button>
+        </div>
       </div>
     </AdminLayout>
   );

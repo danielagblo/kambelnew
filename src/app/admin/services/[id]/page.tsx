@@ -54,15 +54,20 @@ export default function EditServicePage() {
       const response = await fetch(`/api/consultancy?id=${params.id}`);
       if (response.ok) {
         const data = await response.json();
-        const service = data.find((s: any) => s.id === params.id);
-        if (service) {
-          setFormData(service);
-          if (service.features) {
-            setFeatures(service.features);
+        if (data.id) {
+          setFormData(data);
+          if (data.features) {
+            setFeatures(data.features);
           }
+        } else {
+          toast.error('Service not found');
         }
+      } else {
+        const errorData = await response.json().catch(() => ({ error: 'Failed to load service' }));
+        toast.error(errorData.error || 'Failed to load service');
       }
     } catch (error) {
+      console.error('Error fetching service:', error);
       toast.error('Failed to load service');
     } finally {
       setLoading(false);

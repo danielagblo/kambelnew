@@ -14,6 +14,9 @@ const nextConfig = {
       bodySizeLimit: '10mb',
     },
   },
+  env: {
+    NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'dprm1pdxg',
+  },
 };
 
 export default nextConfig;

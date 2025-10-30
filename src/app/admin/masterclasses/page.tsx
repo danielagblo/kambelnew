@@ -1,21 +1,28 @@
 import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
+import { unstable_noStore as noStore } from 'next/cache';
 import AdminLayout from '@/components/admin/AdminLayout';
 import { Card, CardBody } from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import { format } from 'date-fns';
 
 async function getMasterclasses() {
-  return await prisma.masterclass.findMany({
-    include: {
-      _count: {
-        select: { registrations: true },
+  noStore(); // Ensure this component always fetches fresh data
+  try {
+    return await prisma.masterclass.findMany({
+      include: {
+        _count: {
+          select: { registrations: true },
+        },
       },
-    },
-    orderBy: {
-      date: 'desc',
-    },
-  });
+      orderBy: {
+        date: 'desc',
+      },
+    });
+  } catch (error) {
+    console.error('Error fetching masterclasses:', error);
+    return [];
+  }
 }
 
 export default async function AdminMasterclassesPage() {

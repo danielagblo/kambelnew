@@ -1,9 +1,11 @@
 import { prisma } from '@/lib/prisma';
+import { unstable_noStore as noStore } from 'next/cache';
 import AdminLayout from '@/components/admin/AdminLayout';
 import { Card, CardBody } from '@/components/ui/Card';
 import { format } from 'date-fns';
 
 async function getNewsletterSubscribers() {
+  noStore(); // Ensure this component always fetches fresh data
   try {
     return await prisma.newsletterSubscription.findMany({
       orderBy: {

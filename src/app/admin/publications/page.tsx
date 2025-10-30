@@ -1,18 +1,25 @@
 import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
+import { unstable_noStore as noStore } from 'next/cache';
 import AdminLayout from '@/components/admin/AdminLayout';
 import { Card, CardBody, CardHeader } from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 
 async function getPublications() {
-  return await prisma.book.findMany({
-    include: {
-      category: true,
-    },
-    orderBy: {
-      createdAt: 'desc',
-    },
-  });
+  noStore(); // Ensure this component always fetches fresh data
+  try {
+    return await prisma.book.findMany({
+      include: {
+        category: true,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+  } catch (error) {
+    console.error('Error fetching publications:', error);
+    return [];
+  }
 }
 
 export default async function AdminPublicationsPage() {

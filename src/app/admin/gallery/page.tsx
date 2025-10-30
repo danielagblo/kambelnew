@@ -1,15 +1,22 @@
 import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
+import { unstable_noStore as noStore } from 'next/cache';
 import AdminLayout from '@/components/admin/AdminLayout';
 import { Card, CardBody } from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 
 async function getGalleryItems() {
-  return await prisma.galleryItem.findMany({
-    orderBy: {
-      order: 'asc',
-    },
-  });
+  noStore(); // Ensure this component always fetches fresh data
+  try {
+    return await prisma.galleryItem.findMany({
+      orderBy: {
+        order: 'asc',
+      },
+    });
+  } catch (error) {
+    console.error('Error fetching gallery items:', error);
+    return [];
+  }
 }
 
 // Extract YouTube video ID from URL

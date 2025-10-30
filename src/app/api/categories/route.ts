@@ -2,10 +2,15 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
 // GET /api/categories
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    const url = new URL(request.url);
+    const forAdmin = url.searchParams.get('admin') === 'true';
+    
+    const whereClause = forAdmin ? {} : { isActive: true };
+    
     const categories = await prisma.category.findMany({
-      where: { isActive: true },
+      where: whereClause,
       include: {
         _count: {
           select: { books: true },
@@ -14,6 +19,7 @@ export async function GET() {
       orderBy: { name: 'asc' },
     });
 
+    console.log('Categories fetched:', categories.length);
     return NextResponse.json(categories);
   } catch (error) {
     console.error('Error fetching categories:', error);
