@@ -1,12 +1,12 @@
-import Header from '@/components/layout/Header';
-import Footer from '@/components/layout/Footer';
 import Container from '@/components/layout/Container';
-import { Card, CardBody } from '@/components/ui/Card';
+import Footer from '@/components/layout/Footer';
+import Header from '@/components/layout/Header';
 import Button from '@/components/ui/Button';
-import Link from 'next/link';
-import Image from 'next/image';
+import { Card, CardBody } from '@/components/ui/Card';
+import SmartImage from '@/components/ui/SmartImage';
 import { prisma } from '@/lib/prisma';
 import { unstable_noStore as noStore } from 'next/cache';
+import Link from 'next/link';
 
 async function getAboutData() {
   noStore(); // Prevent Next.js from caching this page
@@ -64,7 +64,7 @@ export default async function AboutPage() {
   return (
     <>
       <Header />
-      
+
       {/* Hero Stats */}
       <section className="pt-24 md:pt-32 pb-12 md:pb-20 bg-gradient-to-br from-primary-600 to-primary-900 text-white">
         <Container className="text-center px-4">
@@ -95,24 +95,24 @@ export default async function AboutPage() {
         <Container>
           <div className="max-w-4xl mx-auto">
             {/* Profile Picture */}
-          <div className="flex justify-center mb-8">
-            {about.profilePicture ? (
-              <div className="w-64 h-64 md:w-80 md:h-80 relative rounded-3xl overflow-hidden shadow-xl">
-                <Image
-                  src={about.profilePicture}
-                  alt={about.profileName || 'Profile picture'}
-                  fill
-                  className="object-cover"
-                  unoptimized={about.profilePicture?.startsWith('/uploads/') ?? false}
-                  sizes="(max-width: 768px) 256px, 320px"
-                />
-              </div>
-            ) : (
-              <div className="w-64 h-64 md:w-80 md:h-80 bg-gradient-to-br from-primary-100 to-primary-200 rounded-3xl flex items-center justify-center shadow-xl">
-                <i className="fas fa-user text-7xl text-primary-600" />
-              </div>
-            )}
-          </div>
+            <div className="flex justify-center mb-8">
+              {about.profilePicture ? (
+                <div className="w-64 h-64 md:w-80 md:h-80 relative rounded-3xl overflow-hidden shadow-xl">
+                  <SmartImage
+                    src={about.profilePicture}
+                    alt={about.profileName || 'Profile picture'}
+                    fill
+                    className="object-cover"
+                    unoptimized={about.profilePicture?.startsWith('/uploads/') ?? false}
+                    sizes="(max-width: 768px) 256px, 320px"
+                  />
+                </div>
+              ) : (
+                <div className="w-64 h-64 md:w-80 md:h-80 bg-gradient-to-br from-primary-100 to-primary-200 rounded-3xl flex items-center justify-center shadow-xl">
+                  <i className="fas fa-user text-7xl text-primary-600" />
+                </div>
+              )}
+            </div>
 
             {/* Name and Title */}
             <div className="text-center mb-8">
@@ -120,7 +120,7 @@ export default async function AboutPage() {
               {about.profileTitle && (
                 <p className="text-xl text-primary-600 mb-6">{about.profileTitle}</p>
               )}
-              
+
               {tags.length > 0 && (
                 <div className="flex flex-wrap gap-2 justify-center mb-6">
                   {tags.map((tag, index) => (

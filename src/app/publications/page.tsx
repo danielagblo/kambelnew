@@ -1,13 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import Header from '@/components/layout/Header';
-import Footer from '@/components/layout/Footer';
 import Container from '@/components/layout/Container';
-import { Card, CardBody } from '@/components/ui/Card';
+import Footer from '@/components/layout/Footer';
+import Header from '@/components/layout/Header';
 import Button from '@/components/ui/Button';
-import Image from 'next/image';
+import { Card, CardBody } from '@/components/ui/Card';
+import SmartImage from '@/components/ui/SmartImage';
 import { formatCurrency } from '@/lib/utils';
+import { useEffect, useState } from 'react';
 
 interface Category {
   id: string;
@@ -64,7 +64,7 @@ export default function PublicationsPage() {
   return (
     <>
       <Header />
-      
+
       {/* Hero Section */}
       <section className="pt-24 md:pt-32 pb-12 md:pb-20 bg-gradient-to-br from-primary-600 to-primary-900 text-white">
         <Container className="text-center px-4">
@@ -88,11 +88,10 @@ export default function PublicationsPage() {
               <div className="flex flex-wrap gap-4 justify-center mb-12">
                 <button
                   onClick={() => setSelectedCategory(null)}
-                  className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                    selectedCategory === null
+                  className={`px-4 py-2 rounded-lg font-medium transition-colors ${selectedCategory === null
                       ? 'bg-primary-600 text-white'
                       : 'bg-white text-primary-600 border-2 border-primary-600 hover:bg-primary-50'
-                  }`}
+                    }`}
                 >
                   All Books ({books.length})
                 </button>
@@ -102,11 +101,10 @@ export default function PublicationsPage() {
                     <button
                       key={category.id}
                       onClick={() => setSelectedCategory(category.id)}
-                      className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                        selectedCategory === category.id
+                      className={`px-4 py-2 rounded-lg font-medium transition-colors ${selectedCategory === category.id
                           ? 'bg-primary-600 text-white'
                           : 'bg-white text-primary-600 border-2 border-primary-600 hover:bg-primary-50'
-                      }`}
+                        }`}
                     >
                       {category.name} ({count})
                     </button>
@@ -117,61 +115,61 @@ export default function PublicationsPage() {
               {/* Books Grid */}
               <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-4 md:gap-6">
                 {filteredBooks.map((book) => (
-              <Card key={book.id} hover>
-                <div className="aspect-[3/4] relative bg-gray-200">
-                  {book.coverImage ? (
-                    <Image
-                      src={book.coverImage}
-                      alt={book.title}
-                      fill
-                      className="object-cover"
-                      unoptimized={book.coverImage.startsWith('/uploads/')}
-                      sizes="(max-width: 640px) 50vw, (max-width: 1200px) 33vw, 25vw"
-                    />
-                  ) : (
-                    <div className="flex items-center justify-center h-full bg-gray-300">
-                      <i className="fas fa-book text-3xl sm:text-6xl text-gray-500" />
+                  <Card key={book.id} hover>
+                    <div className="aspect-[3/4] relative bg-gray-200">
+                      {book.coverImage ? (
+                        <SmartImage
+                          src={book.coverImage}
+                          alt={book.title}
+                          fill
+                          className="object-cover"
+                          unoptimized={book.coverImage.startsWith('/uploads/')}
+                          sizes="(max-width: 640px) 50vw, (max-width: 1200px) 33vw, 25vw"
+                        />
+                      ) : (
+                        <div className="flex items-center justify-center h-full bg-gray-300">
+                          <i className="fas fa-book text-3xl sm:text-6xl text-gray-500" />
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
-                <CardBody className="p-2 sm:p-4 md:p-6">
-                  {book.category && (
-                    <div className="text-[10px] sm:text-xs text-primary-600 font-semibold mb-1 uppercase hidden sm:block">
-                      {book.category.name}
-                    </div>
-                  )}
-                  <h3 className="text-sm sm:text-base md:text-lg font-semibold mb-1 line-clamp-2">{book.title}</h3>
-                  <p className="text-[10px] sm:text-xs md:text-sm text-gray-600 mb-2 hidden sm:block">By {book.author}</p>
-                  
-                  {book.description && (
-                    <p className="text-xs sm:text-sm text-gray-600 mb-2 sm:mb-3 md:mb-4 line-clamp-2 hidden sm:block">
-                      {book.description}
-                    </p>
-                  )}
+                    <CardBody className="p-2 sm:p-4 md:p-6">
+                      {book.category && (
+                        <div className="text-[10px] sm:text-xs text-primary-600 font-semibold mb-1 uppercase hidden sm:block">
+                          {book.category.name}
+                        </div>
+                      )}
+                      <h3 className="text-sm sm:text-base md:text-lg font-semibold mb-1 line-clamp-2">{book.title}</h3>
+                      <p className="text-[10px] sm:text-xs md:text-sm text-gray-600 mb-2 hidden sm:block">By {book.author}</p>
 
-                  <div className="flex items-center justify-between mb-2 sm:mb-3 md:mb-4 gap-1">
-                    {book.price > 0 && (
-                      <span className="text-sm sm:text-base md:text-lg font-bold text-primary-600">
-                        {formatCurrency(Number(book.price))}
-                      </span>
-                    )}
-                    {book.pages > 0 && (
-                      <span className="text-[10px] sm:text-xs text-gray-500 hidden sm:inline">
-                        <i className="fas fa-file-alt mr-1" />
-                        {book.pages}p
-                      </span>
-                    )}
-                  </div>
+                      {book.description && (
+                        <p className="text-xs sm:text-sm text-gray-600 mb-2 sm:mb-3 md:mb-4 line-clamp-2 hidden sm:block">
+                          {book.description}
+                        </p>
+                      )}
 
-                  {book.purchaseLink && (
-                    <a href={book.purchaseLink} target="_blank" rel="noopener noreferrer">
-                      <Button size="sm" className="w-full text-[10px] sm:text-xs md:text-sm">
-                        Get Book
-                      </Button>
-                    </a>
-                  )}
-                </CardBody>
-              </Card>
+                      <div className="flex items-center justify-between mb-2 sm:mb-3 md:mb-4 gap-1">
+                        {book.price > 0 && (
+                          <span className="text-sm sm:text-base md:text-lg font-bold text-primary-600">
+                            {formatCurrency(Number(book.price))}
+                          </span>
+                        )}
+                        {book.pages > 0 && (
+                          <span className="text-[10px] sm:text-xs text-gray-500 hidden sm:inline">
+                            <i className="fas fa-file-alt mr-1" />
+                            {book.pages}p
+                          </span>
+                        )}
+                      </div>
+
+                      {book.purchaseLink && (
+                        <a href={book.purchaseLink} target="_blank" rel="noopener noreferrer">
+                          <Button size="sm" className="w-full text-[10px] sm:text-xs md:text-sm">
+                            Get Book
+                          </Button>
+                        </a>
+                      )}
+                    </CardBody>
+                  </Card>
                 ))}
               </div>
 
@@ -179,7 +177,7 @@ export default function PublicationsPage() {
                 <div className="text-center py-20">
                   <i className="fas fa-book text-6xl text-gray-300 mb-4" />
                   <p className="text-xl text-gray-500">
-                    {selectedCategory 
+                    {selectedCategory
                       ? 'No publications in this category'
                       : 'No publications available at the moment'
                     }

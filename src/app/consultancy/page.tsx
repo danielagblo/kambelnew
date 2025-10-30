@@ -1,11 +1,10 @@
-import Header from '@/components/layout/Header';
-import Footer from '@/components/layout/Footer';
 import Container from '@/components/layout/Container';
-import { Card, CardBody } from '@/components/ui/Card';
+import Footer from '@/components/layout/Footer';
+import Header from '@/components/layout/Header';
 import Button from '@/components/ui/Button';
-import Link from 'next/link';
-import Image from 'next/image';
+import SmartImage from '@/components/ui/SmartImage';
 import { prisma } from '@/lib/prisma';
+import Link from 'next/link';
 
 async function getConsultancyServices() {
   return await prisma.consultancyService.findMany({
@@ -26,7 +25,7 @@ export default async function ConsultancyPage() {
   return (
     <>
       <Header />
-      
+
       {/* Hero Section */}
       <section className="pt-24 md:pt-32 pb-12 md:pb-20 bg-gradient-to-br from-primary-600 to-primary-900 text-white">
         <Container className="text-center px-4">
@@ -44,15 +43,14 @@ export default async function ConsultancyPage() {
             {services.map((service, index) => (
               <div
                 key={service.id}
-                className={`flex flex-col ${
-                  index % 2 === 0 ? 'lg:flex-row' : 'lg:flex-row-reverse'
-                } gap-8 items-center`}
+                className={`flex flex-col ${index % 2 === 0 ? 'lg:flex-row' : 'lg:flex-row-reverse'
+                  } gap-8 items-center`}
               >
                 {/* Image */}
                 <div className="w-full lg:w-1/2">
                   <div className="aspect-video relative bg-gradient-to-br from-primary-100 to-primary-200 rounded-lg overflow-hidden">
                     {service.coverImage ? (
-                      <Image
+                      <SmartImage
                         src={service.coverImage}
                         alt={service.name}
                         fill
@@ -74,7 +72,7 @@ export default async function ConsultancyPage() {
                     </div>
                     <h2 className="text-3xl font-bold text-gray-900">{service.name}</h2>
                   </div>
-                  
+
                   <p className="text-lg text-gray-600 mb-6">{service.description}</p>
 
                   {/* Features */}

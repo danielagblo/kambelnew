@@ -1,6 +1,6 @@
 export const dynamic = 'force-dynamic';
-import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { NextRequest, NextResponse } from 'next/server';
 
 // GET /api/analytics/stats
 export async function GET(request: NextRequest) {
@@ -24,14 +24,15 @@ export async function GET(request: NextRequest) {
     });
 
     // Get page views by day (last 30 days)
+    // Raw SQL must use the actual database column names (snake_case). Prisma model uses camelCase.
     const pageViewsByDay = await prisma.$queryRaw<Array<{ date: string; views: number }>>`
-      SELECT 
-        DATE(viewedAt) as date,
+      SELECT
+        DATE(viewed_at) as date,
         COUNT(*) as views
       FROM page_views
-      WHERE viewedAt >= ${startDate.toISOString()}
-      GROUP BY DATE(viewedAt)
-      ORDER BY DATE(viewedAt) ASC
+      WHERE viewed_at >= ${startDate.toISOString()}
+      GROUP BY DATE(viewed_at)
+      ORDER BY DATE(viewed_at) ASC
     `;
 
     // Get top pages

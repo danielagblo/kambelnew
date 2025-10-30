@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import Header from '@/components/layout/Header';
-import Footer from '@/components/layout/Footer';
 import Container from '@/components/layout/Container';
-import Image from 'next/image';
+import Footer from '@/components/layout/Footer';
+import Header from '@/components/layout/Header';
+import SmartImage from '@/components/ui/SmartImage';
 import { formatDate } from '@/lib/utils';
 import { notFound } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 
 interface BlogPost {
@@ -69,7 +69,7 @@ export default function BlogPostPage({ params }: { params: { id: string } }) {
   return (
     <>
       <Header />
-      
+
       {/* Article Header */}
       <section className="pt-32 pb-12">
         <Container size="md">
@@ -88,7 +88,7 @@ export default function BlogPostPage({ params }: { params: { id: string } }) {
 
           {post.coverImage && (
             <div className="h-64 md:h-96 relative rounded-lg overflow-hidden mb-8">
-              <Image
+              <SmartImage
                 src={post.coverImage}
                 alt={post.title}
                 fill

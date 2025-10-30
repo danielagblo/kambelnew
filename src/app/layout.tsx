@@ -1,8 +1,8 @@
+import AnalyticsProvider from '@/components/analytics/AnalyticsProvider';
+import ToasterClient from '@/components/analytics/ToasterClient';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
-import { Toaster } from 'react-hot-toast';
-import AnalyticsProvider from '@/components/analytics/AnalyticsProvider';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
@@ -36,7 +36,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <AnalyticsProvider />
         {children}
-        <Toaster position="top-right" />
+        <ToasterClient />
       </body>
     </html>
   );
