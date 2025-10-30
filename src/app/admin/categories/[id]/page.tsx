@@ -181,7 +181,7 @@ export default function EditCategoryPage() {
               </button>
               <Button
                 type="button"
-                variant="destructive"
+                variant="danger"
                 onClick={handleDelete}
                 disabled={isLoading}
               >
