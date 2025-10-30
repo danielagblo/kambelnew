@@ -6,16 +6,21 @@ import Button from '@/components/ui/Button';
 import { format } from 'date-fns';
 
 async function getMasterclasses() {
-  return await prisma.masterclass.findMany({
-    include: {
-      _count: {
-        select: { registrations: true },
+  try {
+    return await prisma.masterclass.findMany({
+      include: {
+        _count: {
+          select: { registrations: true },
+        },
       },
-    },
-    orderBy: {
-      date: 'desc',
-    },
-  });
+      orderBy: {
+        date: 'desc',
+      },
+    });
+  } catch (error) {
+    console.error('Error fetching masterclasses:', error);
+    return [];
+  }
 }
 
 export default async function AdminMasterclassesPage() {
