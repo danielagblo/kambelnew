@@ -20,12 +20,12 @@ export async function GET(request: NextRequest) {
     const periodPageViewsP = prisma.pageView.count({ where: { viewedAt: { gte: startDate } } });
     const pageViewsByDayP = prisma.$queryRaw<Array<{ date: string; views: number }>>`
       SELECT
-        DATE(viewedAt) as date,
+        DATE("viewedAt") as date,
         COUNT(*) as views
       FROM page_views
-      WHERE viewedAt >= ${startDate.toISOString()}
-      GROUP BY DATE(viewedAt)
-      ORDER BY DATE(viewedAt) ASC
+      WHERE "viewedAt" >= ${startDate}
+      GROUP BY DATE("viewedAt")
+      ORDER BY DATE("viewedAt") ASC
     `;
     const topPagesP = prisma.pageView.groupBy({
       by: ['path', 'title'],
@@ -86,11 +86,26 @@ export async function GET(request: NextRequest) {
       return fallback;
     }
 
-    const totalPageViews = settledValue<number>(totalPageViewsR as any, 0);
-    const periodPageViews = settledValue<number>(periodPageViewsR as any, 0);
-    const pageViewsByDay = settledValue<Array<{ date: string; views: number }>>(pageViewsByDayR as any, []);
-    const topPages = settledValue<any[]>(topPagesR as any, []);
-    const viewsByContentType = settledValue<any[]>(viewsByContentTypeR as any, []);
+    // Helper to coerce BigInt or string counts into JS numbers safely
+    const toNumber = (v: any): number => {
+      if (typeof v === 'bigint') return Number(v);
+      if (typeof v === 'string') {
+        const n = parseInt(v, 10);
+        return Number.isFinite(n) ? n : 0;
+      }
+      if (v == null) return 0;
+      const n = Number(v);
+      return Number.isFinite(n) ? n : 0;
+    };
+
+    const totalPageViews = toNumber(settledValue<any>(totalPageViewsR as any, 0));
+    const periodPageViews = toNumber(settledValue<any>(periodPageViewsR as any, 0));
+    const pageViewsByDayRaw = settledValue<any[]>(pageViewsByDayR as any, []);
+    const pageViewsByDay = (pageViewsByDayRaw || []).map((d: any) => ({ date: d.date, views: toNumber(d.views) }));
+    const topPagesRaw = settledValue<any[]>(topPagesR as any, []);
+    const topPages = topPagesRaw;
+    const viewsByContentTypeRaw = settledValue<any[]>(viewsByContentTypeR as any, []);
+    const viewsByContentType = viewsByContentTypeRaw;
 
     const blogPostsCount = settledValue<number>(blogPostsCountR as any, 0);
     const publicationsCount = settledValue<number>(publicationsCountR as any, 0);
@@ -104,14 +119,14 @@ export async function GET(request: NextRequest) {
       totalPageViews,
       periodPageViews,
       pageViewsByDay,
-      topPages: topPages.map(page => ({
+      topPages: (topPages || []).map(page => ({
         path: page.path,
         title: page.title || page.path,
-        views: page._count?.id || 0,
+        views: toNumber(page._count?.id),
       })),
-      viewsByContentType: viewsByContentType.map(item => ({
+      viewsByContentType: (viewsByContentType || []).map(item => ({
         type: item.contentType,
-        views: item._count?.id || 0,
+        views: toNumber(item._count?.id),
       })),
       counts: {
         blogPosts: blogPostsCount,
