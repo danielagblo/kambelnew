@@ -8,16 +8,21 @@ export async function GET(request: NextRequest) {
     const id = searchParams.get('id');
 
     if (id) {
-      // Get all masterclasses for admin (including inactive)
-      const masterclasses = await prisma.masterclass.findMany({
-        orderBy: { date: 'desc' },
+      // Get single masterclass by ID
+      const masterclass = await prisma.masterclass.findUnique({
+        where: { id },
         include: {
           _count: {
             select: { registrations: true },
           },
         },
       });
-      return NextResponse.json(masterclasses);
+      
+      if (!masterclass) {
+        return NextResponse.json({ error: 'Masterclass not found' }, { status: 404 });
+      }
+      
+      return NextResponse.json(masterclass);
     }
 
     // Get active masterclasses for public (upcoming first, sorted by date)
