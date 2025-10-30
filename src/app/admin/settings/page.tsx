@@ -133,7 +133,9 @@ export default function AdminSettingsPage() {
       fetchConfigs(); // Refresh the data
     } catch (error) {
       console.error('Error saving settings:', error);
-      toast.error('An error occurred while saving settings');
+      const errorMessage = error instanceof Error ? error.message : 'An error occurred while saving settings';
+      console.error('Full error:', errorMessage);
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }

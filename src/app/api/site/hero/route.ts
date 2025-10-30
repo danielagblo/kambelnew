@@ -43,8 +43,16 @@ export async function PUT(request: NextRequest) {
     };
     
     if (!hero) {
+      // Create new hero with defaults for required fields
       const newHero = await prisma.heroConfig.create({
-        data: updateData,
+        data: {
+          ...updateData,
+          profileName: 'Moses Agbesi Katamani',
+          profileTitle: 'Chief Executive Officer',
+          yearsDescription: 'Professional Development',
+          clientsDescription: 'Successfully Helped',
+          publicationsDescription: 'Authored Works',
+        },
       });
       console.log('Created new hero config:', newHero);
       return NextResponse.json(newHero);
