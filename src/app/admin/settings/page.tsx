@@ -269,42 +269,40 @@ export default function AdminSettingsPage() {
                   />
                 </div>
               </div>
+            </div>
+          </CardBody>
+        </Card>
 
-                </div>
-              </CardBody>
-            </Card>
+        {/* Legal Pages */}
+        <Card>
+          <CardHeader>
+            <h2 className="text-xl font-semibold">Legal Pages</h2>
+          </CardHeader>
+          <CardBody>
+            <div className="space-y-6">
+              <Textarea
+                label="Privacy Policy"
+                name="privacyPolicy"
+                value={siteConfig.privacyPolicy}
+                onChange={handleSiteChange}
+                rows={10}
+                placeholder="Enter your privacy policy content here. You can use line breaks for paragraphs."
+              />
 
-            {/* Legal Pages */}
-            <Card>
-              <CardHeader>
-                <h2 className="text-xl font-semibold">Legal Pages</h2>
-              </CardHeader>
-              <CardBody>
-                <div className="space-y-6">
-                  <Textarea
-                    label="Privacy Policy"
-                    name="privacyPolicy"
-                    value={siteConfig.privacyPolicy}
-                    onChange={handleSiteChange}
-                    rows={10}
-                    placeholder="Enter your privacy policy content here. You can use line breaks for paragraphs."
-                  />
+              <Textarea
+                label="Terms & Conditions"
+                name="termsConditions"
+                value={siteConfig.termsConditions}
+                onChange={handleSiteChange}
+                rows={10}
+                placeholder="Enter your terms & conditions content here. You can use line breaks for paragraphs."
+              />
+            </div>
+          </CardBody>
+        </Card>
 
-                  <Textarea
-                    label="Terms & Conditions"
-                    name="termsConditions"
-                    value={siteConfig.termsConditions}
-                    onChange={handleSiteChange}
-                    rows={10}
-                    placeholder="Enter your terms & conditions content here. You can use line breaks for paragraphs."
-                  />
-
-                </div>
-              </CardBody>
-            </Card>
-
-            {/* Hero Configuration */}
-            <Card>
+        {/* Hero Configuration */}
+        <Card>
           <CardHeader>
             <h2 className="text-xl font-semibold">Hero Section</h2>
           </CardHeader>
