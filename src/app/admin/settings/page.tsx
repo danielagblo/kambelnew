@@ -79,69 +79,51 @@ export default function AdminSettingsPage() {
     }
   };
 
-  const handleSiteSubmit = async () => {
+  const handleSaveAll = async () => {
     if (isLoading) return;
-    
-    console.log('Site submit clicked!');
-    console.log('Site config data:', siteConfig);
     
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/site/config', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(siteConfig),
-      });
+      // Save site config and hero config in parallel
+      const [siteRes, heroRes] = await Promise.all([
+        fetch('/api/site/config', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(siteConfig),
+        }),
+        fetch('/api/site/hero', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(heroConfig),
+        }),
+      ]);
 
-      console.log('Response status:', response.status);
-      const data = await response.json();
-      console.log('Response data:', data);
+      const siteData = await siteRes.json();
+      const heroData = await heroRes.json();
 
-      if (response.ok) {
-        toast.success('Site settings updated!');
-        fetchConfigs(); // Refresh the data
+      let hasError = false;
+      let errorMessages: string[] = [];
+
+      if (!siteRes.ok) {
+        hasError = true;
+        errorMessages.push(siteData.error || 'Failed to update site settings');
+      }
+
+      if (!heroRes.ok) {
+        hasError = true;
+        errorMessages.push(heroData.error || 'Failed to update hero settings');
+      }
+
+      if (hasError) {
+        toast.error(errorMessages.join(', '));
       } else {
-        const errorMsg = data.details ? `${data.error}: ${data.details}` : (data.error || 'Failed to update site settings');
-        console.error('Update failed:', errorMsg);
-        toast.error(errorMsg);
+        toast.success('All settings saved successfully!');
+        fetchConfigs(); // Refresh the data
       }
     } catch (error) {
-      console.error('Error:', error);
-      toast.error('An error occurred');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleHeroSubmit = async () => {
-    if (isLoading) return;
-    
-    console.log('Hero submit clicked!');
-    console.log('Hero config data:', heroConfig);
-    
-    setIsLoading(true);
-
-    try {
-      const response = await fetch('/api/site/hero', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(heroConfig),
-      });
-
-      console.log('Response status:', response.status);
-      const data = await response.json();
-      console.log('Response data:', data);
-
-      if (response.ok) {
-        toast.success('Hero settings updated!');
-        fetchConfigs(); // Refresh the data
-      } else {
-        toast.error(data.error || 'Failed to update hero settings');
-      }
-    } catch (error) {
-      console.error('Error:', error);
-      toast.error('An error occurred');
+      console.error('Error saving settings:', error);
+      toast.error('An error occurred while saving settings');
     } finally {
       setIsLoading(false);
     }
@@ -288,24 +270,6 @@ export default function AdminSettingsPage() {
                 </div>
               </div>
 
-              <button
-                type="button"
-                disabled={isLoading}
-                onClick={handleSiteSubmit}
-                className="inline-flex items-center justify-center px-6 py-3 text-base font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isLoading ? (
-                  <>
-                    <i className="fas fa-spinner fa-spin mr-2" />
-                    Updating...
-                  </>
-                ) : (
-                  <>
-                    <i className="fas fa-save mr-2" />
-                    Update Site Settings
-                  </>
-                )}
-                  </button>
                 </div>
               </CardBody>
             </Card>
@@ -335,24 +299,6 @@ export default function AdminSettingsPage() {
                     placeholder="Enter your terms & conditions content here. You can use line breaks for paragraphs."
                   />
 
-                  <button
-                    type="button"
-                    disabled={isLoading}
-                    onClick={handleSiteSubmit}
-                    className="inline-flex items-center justify-center px-6 py-3 text-base font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {isLoading ? (
-                      <>
-                        <i className="fas fa-spinner fa-spin mr-2" />
-                        Updating...
-                      </>
-                    ) : (
-                      <>
-                        <i className="fas fa-save mr-2" />
-                        Update Legal Pages
-                      </>
-                    )}
-                  </button>
                 </div>
               </CardBody>
             </Card>
@@ -422,27 +368,31 @@ export default function AdminSettingsPage() {
                 />
               </div>
 
-              <button
-                type="button"
-                disabled={isLoading}
-                onClick={handleHeroSubmit}
-                className="inline-flex items-center justify-center px-6 py-3 text-base font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isLoading ? (
-                  <>
-                    <i className="fas fa-spinner fa-spin mr-2" />
-                    Updating...
-                  </>
-                ) : (
-                  <>
-                    <i className="fas fa-save mr-2" />
-                    Update Hero Settings
-                  </>
-                )}
-              </button>
             </div>
           </CardBody>
         </Card>
+
+        {/* Save All Button */}
+        <div className="sticky bottom-0 bg-white border-t border-gray-200 p-6 -mx-6 mt-6">
+          <button
+            type="button"
+            disabled={isLoading}
+            onClick={handleSaveAll}
+            className="w-full inline-flex items-center justify-center px-6 py-3 text-base font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isLoading ? (
+              <>
+                <i className="fas fa-spinner fa-spin mr-2" />
+                Saving...
+              </>
+            ) : (
+              <>
+                <i className="fas fa-save mr-2" />
+                Save All Settings
+              </>
+            )}
+          </button>
+        </div>
       </div>
     </AdminLayout>
   );
