@@ -1,16 +1,43 @@
 'use client';
 
-import { useState, FormEvent } from 'react';
-import { useRouter } from 'next/navigation';
 import Button from '@/components/ui/Button';
-import Input from '@/components/ui/Input';
 import { Card, CardBody } from '@/components/ui/Card';
+import Input from '@/components/ui/Input';
+import { useRouter } from 'next/navigation';
+import { FormEvent, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 
 export default function AdminLoginPage() {
   const router = useRouter();
   const [formData, setFormData] = useState({ username: '', password: '' });
   const [isLoading, setIsLoading] = useState(false);
+  const [checking, setChecking] = useState(true);
+
+  // Check if user is already logged in
+  useEffect(() => {
+    const checkSession = async () => {
+      try {
+        // Try to access a protected endpoint to check if session exists
+        const response = await fetch('/api/admin/check-session', {
+          method: 'GET',
+          credentials: 'include',
+        });
+
+        if (response.ok) {
+          // User is already logged in, redirect to dashboard
+          router.replace('/admin/dashboard');
+        } else {
+          // User is not logged in, show login form
+          setChecking(false);
+        }
+      } catch (error) {
+        // User is not logged in, show login form
+        setChecking(false);
+      }
+    };
+
+    checkSession();
+  }, [router]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -47,6 +74,18 @@ export default function AdminLoginPage() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
+
+  // Show loading while checking session
+  if (checking) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-primary-600 to-primary-900 flex items-center justify-center p-4">
+        <div className="text-center">
+          <i className="fas fa-spinner fa-spin text-4xl text-white mb-4" />
+          <p className="text-white">Checking session...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary-600 to-primary-900 flex items-center justify-center p-4">
