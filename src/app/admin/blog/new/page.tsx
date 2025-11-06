@@ -9,8 +9,13 @@ import Input from '@/components/ui/Input';
 import Textarea from '@/components/ui/Textarea';
 import ImageUpload from '@/components/ui/ImageUpload';
 import toast from 'react-hot-toast';
+import dynamic from 'next/dynamic';
+// import EditorClient from '@/app/EditorClient';
 
 export default function NewBlogPostPage() {
+  const EditorClient = dynamic(() => import("@/app/EditorClient"), {
+    ssr: false,
+  });
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -67,15 +72,7 @@ export default function NewBlogPostPage() {
               placeholder="Brief summary of the post"
             />
 
-            <Textarea
-              label="Content"
-              name="content"
-              value={formData.content}
-              onChange={handleChange}
-              rows={15}
-              required
-              placeholder="Write your blog post content here..."
-            />
+            <EditorClient/>
 
             <ImageUpload
               label="Cover Image"
