@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import AdminLayout from '@/components/admin/AdminLayout';
 import { Card, CardBody } from '@/components/ui/Card';
@@ -12,10 +12,14 @@ import toast from 'react-hot-toast';
 import dynamic from 'next/dynamic';
 // import EditorClient from '@/app/EditorClient';
 
+const EditorClient = dynamic(() => import('@/app/EditorClient'), { ssr: false }) as unknown as React.ComponentType<{
+  label: string;
+  name: string;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | string) => void;
+}>;
+
 export default function NewBlogPostPage() {
-  const EditorClient = dynamic(() => import("@/app/EditorClient"), {
-    ssr: false,
-  });
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -27,7 +31,17 @@ export default function NewBlogPostPage() {
     isPublished: false,
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: string | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    // EditorClient may call onChange with a string (the editor content),
+    // while regular inputs/textareas emit ChangeEvent. Handle both cases.
+    if (typeof e === 'string') {
+      setFormData((prev) => ({
+        ...prev,
+        content: e,
+      }));
+      return;
+    }
+
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
@@ -72,7 +86,7 @@ export default function NewBlogPostPage() {
               placeholder="Brief summary of the post"
             />
 
-            <EditorClient/>
+            <EditorClient label="Content" name="content" value={formData.content} onChange={handleChange} />
 
             <ImageUpload
               label="Cover Image"

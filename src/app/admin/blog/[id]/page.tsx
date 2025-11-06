@@ -1,15 +1,22 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import { useRouter, useParams } from 'next/navigation';
 import AdminLayout from '@/components/admin/AdminLayout';
 import { Card, CardBody } from '@/components/ui/Card';
+import ImageUpload from '@/components/ui/ImageUpload';
 import Input from '@/components/ui/Input';
 import Textarea from '@/components/ui/Textarea';
-import ImageUpload from '@/components/ui/ImageUpload';
+import dynamic from 'next/dynamic';
+import { useParams, useRouter } from 'next/navigation';
+import { useCallback, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 
 export default function EditBlogPostPage() {
+  const EditorClient = dynamic(() => import('@/app/EditorClient'), { ssr: false }) as unknown as React.ComponentType<{
+    label: string;
+    name: string;
+    value: string;
+    onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | string) => void;
+  }>;
   const router = useRouter();
   const params = useParams();
   const [isLoading, setIsLoading] = useState(false);
@@ -72,13 +79,23 @@ export default function EditBlogPostPage() {
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
+  const handleChange = (e: string | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      // EditorClient may call onChange with a string (the editor content),
+      // while regular inputs/textareas emit ChangeEvent. Handle both cases.
+      if (typeof e === 'string') {
+        setFormData((prev) => ({
+          ...prev,
+          content: e,
+        }));
+        return;
+      }
+  
+      const { name, value } = e.target;
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    };
 
   if (loading) {
     return (
@@ -124,14 +141,7 @@ export default function EditBlogPostPage() {
               rows={3}
             />
 
-            <Textarea
-              label="Content"
-              name="content"
-              value={formData.content}
-              onChange={handleChange}
-              rows={15}
-              required
-            />
+            <EditorClient label="Content" name="content" value={formData.content} onChange={handleChange} />
 
             <div className="flex items-center space-x-2">
               <input
@@ -152,7 +162,7 @@ export default function EditBlogPostPage() {
                 disabled={isLoading}
                 onClick={async () => {
                   if (isLoading) return;
-                  
+
                   setIsLoading(true);
                   try {
                     const response = await fetch(`/api/blog`, {
@@ -211,7 +221,7 @@ export default function EditBlogPostPage() {
               onChange={(url) => setFormData((prev) => ({ ...prev, coverImage: url }))}
               folder="blog"
             />
-            
+
           </form>
         </CardBody>
       </Card>
