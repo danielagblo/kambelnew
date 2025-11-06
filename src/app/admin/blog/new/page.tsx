@@ -1,23 +1,18 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import AdminLayout from '@/components/admin/AdminLayout';
-import { Card, CardBody } from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
+import { Card, CardBody } from '@/components/ui/Card';
+import ImageUpload from '@/components/ui/ImageUpload';
 import Input from '@/components/ui/Input';
 import Textarea from '@/components/ui/Textarea';
-import ImageUpload from '@/components/ui/ImageUpload';
-import toast from 'react-hot-toast';
 import dynamic from 'next/dynamic';
-// import EditorClient from '@/app/EditorClient';
+import { useRouter } from 'next/navigation';
+import React, { useCallback, useState } from 'react';
+import toast from 'react-hot-toast';
 
-const EditorClient = dynamic(() => import('@/app/EditorClient'), { ssr: false }) as unknown as React.ComponentType<{
-  label: string;
-  name: string;
-  value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | string) => void;
-}>;
+// Move dynamic import outside component to prevent re-creation
+const EditorClient = dynamic(() => import('@/app/EditorClient'), { ssr: false });
 
 export default function NewBlogPostPage() {
   const router = useRouter();
@@ -31,7 +26,7 @@ export default function NewBlogPostPage() {
     isPublished: false,
   });
 
-  const handleChange = (e: string | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = useCallback((e: string | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     // EditorClient may call onChange with a string (the editor content),
     // while regular inputs/textareas emit ChangeEvent. Handle both cases.
     if (typeof e === 'string') {
@@ -47,7 +42,7 @@ export default function NewBlogPostPage() {
       ...prev,
       [name]: value,
     }));
-  };
+  }, []);
 
   return (
     <AdminLayout>
@@ -58,7 +53,7 @@ export default function NewBlogPostPage() {
 
       <Card>
         <CardBody>
-          <form className="space-y-6">
+          <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
             <Input
               label="Title"
               name="title"
@@ -114,7 +109,7 @@ export default function NewBlogPostPage() {
                 disabled={isLoading}
                 onClick={async () => {
                   if (isLoading) return;
-                  
+
                   setIsLoading(true);
                   try {
                     const response = await fetch('/api/blog', {

@@ -10,13 +10,10 @@ import { useParams, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 
+// Move dynamic import outside component to prevent re-creation
+const EditorClient = dynamic(() => import('@/app/EditorClient'), { ssr: false });
+
 export default function EditBlogPostPage() {
-  const EditorClient = dynamic(() => import('@/app/EditorClient'), { ssr: false }) as unknown as React.ComponentType<{
-    label: string;
-    name: string;
-    value: string;
-    onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | string) => void;
-  }>;
   const router = useRouter();
   const params = useParams();
   const [isLoading, setIsLoading] = useState(false);
@@ -79,23 +76,23 @@ export default function EditBlogPostPage() {
     }
   };
 
-  const handleChange = (e: string | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      // EditorClient may call onChange with a string (the editor content),
-      // while regular inputs/textareas emit ChangeEvent. Handle both cases.
-      if (typeof e === 'string') {
-        setFormData((prev) => ({
-          ...prev,
-          content: e,
-        }));
-        return;
-      }
-  
-      const { name, value } = e.target;
+  const handleChange = useCallback((e: string | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    // EditorClient may call onChange with a string (the editor content),
+    // while regular inputs/textareas emit ChangeEvent. Handle both cases.
+    if (typeof e === 'string') {
       setFormData((prev) => ({
         ...prev,
-        [name]: value,
+        content: e,
       }));
-    };
+      return;
+    }
+
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  }, []);
 
   if (loading) {
     return (
@@ -116,7 +113,7 @@ export default function EditBlogPostPage() {
 
       <Card>
         <CardBody>
-          <form className="space-y-6">
+          <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
             <Input
               label="Title"
               name="title"
