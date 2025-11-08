@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter, useParams } from 'next/navigation';
 import AdminLayout from '@/components/admin/AdminLayout';
 import { Card, CardBody } from '@/components/ui/Card';
+import ImageUpload from '@/components/ui/ImageUpload';
 import Input from '@/components/ui/Input';
 import Textarea from '@/components/ui/Textarea';
-import ImageUpload from '@/components/ui/ImageUpload';
+import { useParams, useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 
 interface Category {
@@ -201,13 +201,21 @@ export default function EditPublicationPage() {
               </label>
             </div>
 
-            <div className="flex space-x-4">
+            <ImageUpload
+              label="Cover Image (optional)"
+              value={formData.coverImage || ''}
+              onChange={(url) => setFormData((prev) => ({ ...prev, coverImage: url }))}
+              folder="publications"
+            />
+
+            {/* Action buttons placed after all form fields and image upload */}
+            <div className="flex space-x-4 mt-6">
               <button
                 type="button"
                 disabled={isLoading}
                 onClick={async () => {
                   if (isLoading) return;
-                  
+
                   setIsLoading(true);
                   try {
                     const response = await fetch(`/api/publications/${params.id}`, {
@@ -258,13 +266,6 @@ export default function EditPublicationPage() {
                 Delete
               </button>
             </div>
-
-            <ImageUpload
-              label="Cover Image (optional)"
-              value={formData.coverImage || ''}
-              onChange={(url) => setFormData((prev) => ({ ...prev, coverImage: url }))}
-              folder="publications"
-            />
           </form>
         </CardBody>
       </Card>

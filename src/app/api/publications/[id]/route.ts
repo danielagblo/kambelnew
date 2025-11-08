@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { NextRequest, NextResponse } from 'next/server';
 
 // GET /api/publications/:id
 export async function GET(
@@ -42,6 +42,8 @@ export async function PUT(
         coverImage: body.coverImage,
         purchaseLink: body.purchaseLink,
         categoryId: body.categoryId,
+        // Make sure updates reactivate the publication by default
+        isActive: true,
       },
       include: {
         category: true,

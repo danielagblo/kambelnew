@@ -1,9 +1,10 @@
-import Link from 'next/link';
+import AdminLayout from '@/components/admin/AdminLayout';
+import PublicationActions from '@/components/admin/PublicationActions';
+import Button from '@/components/ui/Button';
+import { Card, CardBody } from '@/components/ui/Card';
 import { prisma } from '@/lib/prisma';
 import { unstable_noStore as noStore } from 'next/cache';
-import AdminLayout from '@/components/admin/AdminLayout';
-import { Card, CardBody, CardHeader } from '@/components/ui/Card';
-import Button from '@/components/ui/Button';
+import Link from 'next/link';
 
 async function getPublications() {
   noStore(); // Ensure this component always fetches fresh data
@@ -72,22 +73,16 @@ export default async function AdminPublicationsPage() {
                       <td className="px-4 py-4 text-sm text-gray-600">${pub.price}</td>
                       <td className="px-4 py-4">
                         <span
-                          className={`px-2 py-1 text-xs font-medium rounded-full ${
-                            pub.isActive
+                          className={`px-2 py-1 text-xs font-medium rounded-full ${pub.isActive
                               ? 'bg-green-100 text-green-800'
                               : 'bg-gray-100 text-gray-800'
-                          }`}
+                            }`}
                         >
                           {pub.isActive ? 'Active' : 'Inactive'}
                         </span>
                       </td>
                       <td className="px-4 py-4 text-sm">
-                        <Link
-                          href={`/admin/publications/${pub.id}`}
-                          className="text-primary-600 hover:text-primary-900 mr-3"
-                        >
-                          <i className="fas fa-edit" />
-                        </Link>
+                        <PublicationActions id={pub.id} />
                       </td>
                     </tr>
                   ))
