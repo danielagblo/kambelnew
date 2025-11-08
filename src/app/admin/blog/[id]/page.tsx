@@ -153,7 +153,15 @@ export default function EditBlogPostPage() {
               </label>
             </div>
 
-            <div className="flex space-x-4">
+            <ImageUpload
+              label="Cover Image (optional)"
+              value={formData.coverImage || ''}
+              onChange={(url) => setFormData((prev) => ({ ...prev, coverImage: url }))}
+              folder="blog"
+            />
+
+            {/* Action buttons placed after all form fields and image upload */}
+            <div className="flex space-x-4 mt-6">
               <button
                 type="button"
                 disabled={isLoading}
@@ -211,13 +219,6 @@ export default function EditBlogPostPage() {
                 Delete
               </button>
             </div>
-
-            <ImageUpload
-              label="Cover Image (optional)"
-              value={formData.coverImage || ''}
-              onChange={(url) => setFormData((prev) => ({ ...prev, coverImage: url }))}
-              folder="blog"
-            />
 
           </form>
         </CardBody>
