@@ -1,14 +1,15 @@
-import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { NextRequest, NextResponse } from 'next/server';
 
 // GET /api/blog
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
+    const admin = searchParams.get('admin'); // Add admin flag to bypass published check
 
     if (id) {
-      // Get single post by ID (only published posts for public)
+      // Get single post by ID
       const post = await prisma.blogPost.findUnique({
         where: { id },
       });
@@ -17,8 +18,8 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({ error: 'Blog post not found' }, { status: 404 });
       }
       
-      // For public access, only return published posts
-      if (!post.isPublished) {
+      // For public access, only return published posts; admins can see all
+      if (!post.isPublished && !admin) {
         return NextResponse.json({ error: 'Blog post not found' }, { status: 404 });
       }
       

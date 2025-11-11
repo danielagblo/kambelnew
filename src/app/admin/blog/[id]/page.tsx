@@ -29,7 +29,7 @@ export default function EditBlogPostPage() {
 
   const fetchPost = useCallback(async () => {
     try {
-      const response = await fetch(`/api/blog?id=${params.id}`);
+      const response = await fetch(`/api/blog?id=${params.id}&admin=true`);
       if (response.ok) {
         const data = await response.json();
         if (data.id) {
