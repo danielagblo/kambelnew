@@ -1,13 +1,12 @@
-'use client';
-
+import CopyLinkButton from '@/components/CopyLinkButton';
 import Container from '@/components/layout/Container';
 import Footer from '@/components/layout/Footer';
 import Header from '@/components/layout/Header';
 import SmartImage from '@/components/ui/SmartImage';
+import { prisma } from '@/lib/prisma';
 import { formatDate } from '@/lib/utils';
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import toast from 'react-hot-toast';
 
 interface BlogPost {
   id: string;
@@ -21,50 +20,41 @@ interface BlogPost {
   updatedAt: Date;
 }
 
-export default function BlogPostPage({ params }: { params: { id: string } }) {
-  const [post, setPost] = useState<BlogPost | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchPost = async () => {
-      try {
-        const response = await fetch(`/api/blog?id=${params.id}`);
-        if (response.ok) {
-          const data = await response.json();
-          setPost(data);
-        } else {
-          notFound();
-        }
-      } catch (error) {
-        console.error('Error fetching post:', error);
-      } finally {
-        setLoading(false);
-      }
+export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
+  const post = await prisma.blogPost.findUnique({ where: { id: params.id } });
+  if (!post || !post.isPublished) {
+    return {
+      title: 'Kambel Consult - Blog',
+      description: 'Kambel Consult blog',
     };
-    fetchPost();
-  }, [params.id]);
-
-  const handleCopyLink = () => {
-    const url = `${window.location.origin}/blog/${params.id}`;
-    navigator.clipboard.writeText(url);
-    toast.success('Link copied to clipboard!');
-  };
-
-  if (loading) {
-    return (
-      <>
-        <Header />
-        <div className="flex justify-center items-center h-screen">
-          <i className="fas fa-spinner fa-spin text-4xl text-primary-600" />
-        </div>
-        <Footer />
-      </>
-    );
   }
 
-  if (!post) {
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || '';
+  const url = `${siteUrl}/blog/${post.id}`;
+  const image = post.coverImage ? (post.coverImage.startsWith('/') ? `${siteUrl}${post.coverImage}` : post.coverImage) : undefined;
+
+  return {
+    title: post.title,
+    description: post.excerpt || post.content.substring(0, 150),
+    keywords: ['consulting', 'career development', 'blog', 'kambel'],
+    openGraph: {
+      title: post.title,
+      description: post.excerpt || post.content.substring(0, 50),
+      url,
+      images: image ? [{ url: image }] : [],
+      type: 'article',
+      locale: 'en_US',
+    },
+  };
+}
+
+export default async function BlogPostPage({ params }: { params: { id: string } }) {
+  const post = await prisma.blogPost.findUnique({ where: { id: params.id } });
+  if (!post || !post.isPublished) {
     notFound();
   }
+
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || '';
 
   return (
     <>
@@ -118,7 +108,7 @@ export default function BlogPostPage({ params }: { params: { id: string } }) {
             <div className="flex flex-wrap gap-3">
               {/* Facebook */}
               <a
-                href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(`${typeof window !== 'undefined' ? window.location.origin : ''}/blog/${post.id}`)}`}
+                href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(`${siteUrl}/blog/${post.id}`)}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center px-4 py-2 bg-[#1877F2] text-white rounded-lg hover:bg-[#0d66d9] transition-colors"
@@ -129,7 +119,7 @@ export default function BlogPostPage({ params }: { params: { id: string } }) {
 
               {/* Twitter/X */}
               <a
-                href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(`${typeof window !== 'undefined' ? window.location.origin : ''}/blog/${post.id}`)}&text=${encodeURIComponent(post.title)}`}
+                href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(`${siteUrl}/blog/${post.id}`)}&text=${encodeURIComponent(post.title)}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center px-4 py-2 bg-[#1DA1F2] text-white rounded-lg hover:bg-[#0d8bd9] transition-colors"
@@ -140,7 +130,7 @@ export default function BlogPostPage({ params }: { params: { id: string } }) {
 
               {/* LinkedIn */}
               <a
-                href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(`${typeof window !== 'undefined' ? window.location.origin : ''}/blog/${post.id}`)}`}
+                href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(`${siteUrl}/blog/${post.id}`)}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center px-4 py-2 bg-[#0A66C2] text-white rounded-lg hover:bg-[#004182] transition-colors"
@@ -151,7 +141,7 @@ export default function BlogPostPage({ params }: { params: { id: string } }) {
 
               {/* WhatsApp */}
               <a
-                href={`https://wa.me/?text=${encodeURIComponent(post.title + ' ' + `${typeof window !== 'undefined' ? window.location.origin : ''}/blog/${post.id}`)}`}
+                href={`https://wa.me/?text=${encodeURIComponent(post.title + ' ' + `${siteUrl}/blog/${post.id}`)}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center px-4 py-2 bg-[#25D366] text-white rounded-lg hover:bg-[#1da851] transition-colors"
@@ -162,21 +152,15 @@ export default function BlogPostPage({ params }: { params: { id: string } }) {
 
               {/* Email */}
               <a
-                href={`mailto:?subject=${encodeURIComponent(post.title)}&body=${encodeURIComponent(`Check out this article: ${typeof window !== 'undefined' ? window.location.origin : ''}/blog/${post.id}`)}`}
+                href={`mailto:?subject=${encodeURIComponent(post.title)}&body=${encodeURIComponent(`Check out this article: ${siteUrl}/blog/${post.id}`)}`}
                 className="inline-flex items-center px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
               >
                 <i className="fas fa-envelope mr-2" />
                 Email
               </a>
 
-              {/* Copy Link */}
-              <button
-                onClick={handleCopyLink}
-                className="inline-flex items-center px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
-              >
-                <i className="fas fa-link mr-2" />
-                Copy Link
-              </button>
+              {/* Copy Link (client) */}
+              <CopyLinkButton id={post.id} />
             </div>
           </div>
         </Container>
